@@ -1,7 +1,6 @@
 import User from "./User"
-
-
 type Ticket = {
+    id : number,
     user : User,
     about : string,
     details : string,
