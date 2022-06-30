@@ -9,7 +9,7 @@ export default function Filter(props : FilterProps) {
 
     const [activeIndex, setActiveIndex] = useState<number>(-1)
 
-    return <Flex padding={"5px 10px"} flexDir={"row"} gap="20px" alignItems={"center"}>
+    return <Flex padding={"5px 0px"} flexDir={"row"} gap="20px" alignItems={"center"}>
         {props.items.map((x,index) => <FilterButton onClick={()=>{
             props.onItemClick(index);
             setActiveIndex(index);

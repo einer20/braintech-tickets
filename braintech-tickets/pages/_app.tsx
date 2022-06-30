@@ -1,22 +1,16 @@
+import { Box, ChakraProvider, extendTheme } from '@chakra-ui/react'
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import { ChakraProvider, extendTheme } from '@chakra-ui/react'
+import Head from 'next/head';
 
-
-const theme = {
-  colors : {
-    ticket : {
-      active : "red"
-    }
-  }
-}
-
-const _theme = extendTheme(theme);
-console.log(_theme)
 function MyApp({ Component, pageProps }: AppProps) {
-  return <ChakraProvider theme={_theme}> 
+  
+  return <>
+      <Head>
+        <meta name="viewport" id="viewport" content="width=device-width, initial-scale=1"></meta>
+      </Head>
       <Component {...pageProps} />
-  </ChakraProvider>
+  </>
 }
 
 export default MyApp

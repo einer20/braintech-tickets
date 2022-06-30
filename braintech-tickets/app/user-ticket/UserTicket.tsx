@@ -19,14 +19,13 @@ export default function UserTicket(props : UserTicketProps) {
         cursor={"default"}
         _hover={{
             backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.1) 0 0)"
-
         }}
         _active={{
             backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.2) 0 0)"
         }}
     >
         <Flex flexDir="row" gap={"25px"} alignItems="center">
-            <Text fontFamily={'Roboto'} width="50px" fontSize={"lg"} fontWeight="bold">#{props.ticket.id}</Text>
+            <Text fontFamily={'Roboto'} width="50px" fontSize={"md"} fontWeight="bold">#{props.ticket.id}</Text>
             <UserInitials userFullName={props.ticket.user.user} />
             <Flex flexDir="column" gap={"0px"} width="200px">
                 <Text fontFamily={'Roboto'}  padding={0} margin={0} fontWeight={"bold"}>{props.ticket.user.fullName}</Text>
