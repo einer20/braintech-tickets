@@ -8,7 +8,7 @@ export type UserTicketProps = {
     onClick? : (t : Ticket) => void
 }
 const colors = {
-    'ACTIVO' : '#8484841c',
+    'NOASIGNADO' : '#8484841c',
     'ENPROGRESO' : '#2196f342',
     "REVOCADO" : "#f4433640",
     "RESUELTO": "#8bc34a59"
@@ -25,9 +25,9 @@ export default function UserTicket(props : UserTicketProps) {
         }}
     >
         <Flex flexDir="row" gap={"25px"} alignItems="center">
-            <Text fontFamily={'Roboto'} width="50px" fontSize={"md"} fontWeight="bold">#{props.ticket.id}</Text>
+            <Text fontFamily={'Roboto'} width="50px" fontSize={"md"} fontWeight="bold">#{props.ticket.id?.slice(0,4)}</Text>
             <UserInitials userFullName={props.ticket.user.user} />
-            <Flex flexDir="column" gap={"0px"} width="200px">
+            <Flex userSelect={"none"} flexDir="column" gap={"0px"} width="200px">
                 <Text fontFamily={'Roboto'}  padding={0} margin={0} fontWeight={"bold"}>{props.ticket.user.fullName}</Text>
                 <Text fontFamily={'Roboto'}   padding={0} margin={0} fontWeight={"bold"}>{props.ticket.user.company?.shortName}</Text>
             </Flex>

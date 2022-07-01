@@ -3,13 +3,29 @@ import UserTicket from '../../app/user-ticket/UserTicket';
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import Filter from "../../app/filter/Filter";
 import NewTicket from "./new-ticket";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useUser from "../../app/useUser";
+import Ticket from "../../app/models/Ticket";
+import Link from "next/link";
+import { getTickets } from "../../app/services/TicketService";
+import useTickets from "../../app/useTickets";
 export default function Index()
 {
-    const [showCreateNewTicket, setShowCreateNewTicket] = useState<boolean>(false);
 
     const {user} = useUser();
+    const [showCreateNewTicket, setShowCreateNewTicket] = useState<boolean>(false);
+    const [tickets, setTickets] = useState<Ticket[]>([]);
+    const { setFilter, _tickets, isLoading } = useTickets(user!);
+
+    useEffect(()=>{
+        if(user != null) {
+            getTickets(user).then(x=>{
+                console.log(x);
+                setTickets(x);
+            });
+        }
+        
+    },[]);
 
     return <Layout>
 
@@ -20,7 +36,8 @@ export default function Index()
                 {user?.company?.name} - Tickets
             </Heading>
 
-            <Button height="35px"
+            <Button height="40px"
+                width={"170px"}
                 background="#1570CA"
                 color="white"
                 borderRadius={"4px"}
@@ -41,7 +58,11 @@ export default function Index()
             </Button>
         </Flex>
 
-        {showCreateNewTicket ? <NewTicket onCreate={t=>{ }} onCancel={()=> setShowCreateNewTicket(false)} show={true}/> : null}
+        {showCreateNewTicket ? <NewTicket onCreate={t=>{
+            tickets.push(t);
+            setTickets([...tickets]);
+            setShowCreateNewTicket(false);
+         }} onCancel={()=> setShowCreateNewTicket(false)} show={true}/> : null}
         
 
         <Filter items={[
@@ -54,71 +75,16 @@ export default function Index()
         <Text fontFamily='Roboto' margin={0}>
             Mostrando los ultimos 30 tickets
         </Text>
-        <UserTicket ticket={{
-            id: 3234,
-            about :"ADMISION LANZANDO UN ERROR",
-            details: "no me permite ingresar pacientes en el area de admision",
-            state: "ACTIVO",
-            type: "emergencia",
-            attachments:[],
-            user: {
-                user: "ESANTANA",
-                email: "einersantanar@gmail.com",
-                fullName: "EINER SANTANA",
-                level: "CLIENT",
-                company: {
-                    email :"braintechrd@hotmail.com",
-                    name: "BRAIN TECH RD",
-                    shortName: "BrainTech",
-                    slogan: "BRAIN TECH"
-                }
-            }
-        }} />
-
-        <UserTicket ticket={{
-            id: 887,
-            about :"REPORTE INVENTARIO ERROR AL CARGAR",
-            details: "no me permite ingresar pacientes en el area de admision",
-            state: "ENPROGRESO",
-            type: "emergencia",
-            attachments:[],
-            user: {
-                user: "ASANTANA",
-                email: "einersantanar@gmail.com",
-                fullName: "ANER SANTANA",
-                level: "CLIENT",
-                company: {
-                    email :"braintechrd@hotmail.com",
-                    name: "CEDIMAT",
-                    shortName: "CEDIMAT",
-                    slogan: "BRAIN TECH"
-                }
-            }
-        }} />
-
-<UserTicket ticket={{
-            id: 7853,
-            about :"ADMISION LANZANDO UN ERROR",
-            details: "no me permite ingresar pacientes en el area de admision",
-            state: "RESUELTO",
-            type: "emergencia",
-            attachments:[],
-            user: {
-                user: "GA",
-                email: "einersantanar@gmail.com",
-                fullName: "GATELLANA ALMONTE",
-                level: "CLIENT",
-                company: {
-                    email :"braintechrd@hotmail.com",
-                    name: "BRAIN TECH RD",
-                    shortName: "IRMIE",
-                    slogan: "BRAIN TECH"
-                }
-            }
-        }} />
+        
+        {tickets.map(x=> <UserTicket ticket={x} />)}
+        
+        <Flex  flexDir={"row"} display={tickets.length == 0 ? "flex" : "none"} gap={"4px"}>
+            <Text fontFamily={'Roboto'} fontWeight={"bold"}>No tiene tickets registrados.</Text> 
+            <Text cursor={'pointer'} onClick={x=> setShowCreateNewTicket(true)} fontFamily={'Roboto'} fontWeight={ "bold" } borderBottom={`dotted 1px blue`} color="blue">
+                Crear ticket
+            </Text>
+        </Flex>
 
         </Flex>
-        
-     
-    </Layout>
+    </Layout>;
 }

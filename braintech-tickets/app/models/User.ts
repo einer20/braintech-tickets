@@ -6,7 +6,7 @@ type User = {
     fullName : string,
     level: "ADMIN" | "CLIENT",
     email: string,
-    company? : Company
+    company : Company
 };
 
 export default User;

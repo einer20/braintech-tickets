@@ -15,9 +15,7 @@ export default function Layout(props : { children : JSX.Element | JSX.Element[]}
        
         initializeApp(firebaseConfig);
         if(user == null)  {
-          
             getUser("esantana","").then(x=>{
-                console.log(x);
                 setUser(x);
             });
         }
