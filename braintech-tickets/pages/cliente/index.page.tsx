@@ -4,9 +4,12 @@ import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import Filter from "../../app/filter/Filter";
 import NewTicket from "./new-ticket";
 import { useState } from "react";
+import useUser from "../../app/useUser";
 export default function Index()
 {
     const [showCreateNewTicket, setShowCreateNewTicket] = useState<boolean>(false);
+
+    const {user} = useUser();
 
     return <Layout>
 
@@ -14,7 +17,7 @@ export default function Index()
 
         <Flex flexDir={"row"} justifyContent={"space-between"}>
             <Heading size={"lg"} fontFamily={'Roboto'}>
-                Clinica Dr. Cedano - Tickets
+                {user?.company?.name} - Tickets
             </Heading>
 
             <Button height="35px"

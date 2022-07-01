@@ -1,9 +1,29 @@
 import { Box, Heading, Text, Flex, ChakraProvider } from "@chakra-ui/react";
+import { initializeApp } from "firebase/app";
 import Head from "next/head";
+import { useEffect } from "react";
+import { getUser } from "../app/services/UserService";
 import UserInitials from "../app/UserInitials";
+import useUser from "../app/useUser";
+import { firebaseConfig } from "../firebaseConfig";
 
 export default function Layout(props : { children : JSX.Element | JSX.Element[]})
 {
+    const {user, setUser} = useUser();
+     
+    useEffect(()=>{
+       
+        initializeApp(firebaseConfig);
+        if(user == null)  {
+          
+            getUser("esantana","").then(x=>{
+                console.log(x);
+                setUser(x);
+            });
+        }
+        
+    });
+
     return <>
     <ChakraProvider>
         <Head>
@@ -27,8 +47,8 @@ export default function Layout(props : { children : JSX.Element | JSX.Element[]}
                 <Flex flexDir={"row"} gap="4px">
                     <UserInitials  userFullName="MUSANTANA" />
                     <Flex flexDir={"column"} alignItems={"center"} justifyContent="center">
-                        <Text margin={0} fontWeight={"bold"} fontFamily={'Roboto'}>ESANTANA</Text>
-                        <Text  margin={0} color="#333" fontFamily={'Roboto'}>DRCEDANO</Text>
+                        <Text margin={0} fontWeight={"bold"} fontFamily={'Roboto'}>{user?.user.toUpperCase()}</Text>
+                        <Text  margin={0} color="#333" fontFamily={'Roboto'}>{user?.company?.shortName.toUpperCase()}</Text>
                     </Flex>
                 </Flex>
 

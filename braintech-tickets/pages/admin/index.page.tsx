@@ -2,8 +2,13 @@ import Layout from "../Layout";
 import UserTicket from '../../app/user-ticket/UserTicket';
 import { Flex, Heading } from "@chakra-ui/react";
 import Filter from "../../app/filter/Filter";
+import { getUser } from "../../app/services/UserService";
+import { initializeApp } from "firebase/app";
+import { firebaseConfig } from "../../firebaseConfig";
 export default function Index()
 {
+
+
     return <Layout>
 
         <Flex flexDir={"column"} gap="10px">
