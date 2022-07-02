@@ -7,25 +7,17 @@ import { useEffect, useState } from "react";
 import useUser from "../../app/useUser";
 import Ticket from "../../app/models/Ticket";
 import Link from "next/link";
-import { getTickets } from "../../app/services/TicketService";
+import { getTickets, TicketFilter } from "../../app/services/TicketService";
 import useTickets from "../../app/useTickets";
+import TicketDetails from "./ticket-details";
 export default function Index()
 {
 
     const {user} = useUser();
     const [showCreateNewTicket, setShowCreateNewTicket] = useState<boolean>(false);
-    const [tickets, setTickets] = useState<Ticket[]>([]);
-    const { setFilter, _tickets, isLoading } = useTickets(user!);
-
-    useEffect(()=>{
-        if(user != null) {
-            getTickets(user).then(x=>{
-                console.log(x);
-                setTickets(x);
-            });
-        }
-        
-    },[]);
+    const [ currentFilter, setCurrentFilter] = useState<TicketFilter>("TODOS");
+    const { setFilter, tickets, isLoading } = useTickets();
+    const [selectedTicket, setSelectedTicket] = useState<Ticket>();
 
     return <Layout>
 
@@ -59,24 +51,27 @@ export default function Index()
         </Flex>
 
         {showCreateNewTicket ? <NewTicket onCreate={t=>{
-            tickets.push(t);
-            setTickets([...tickets]);
+            setFilter(currentFilter);
             setShowCreateNewTicket(false);
          }} onCancel={()=> setShowCreateNewTicket(false)} show={true}/> : null}
         
 
-        <Filter items={[
-            "Cargar todos" , "Cargar no resueltos", "Cargar resueltos", "Creados por mi"
-        ]} onItemClick={index=>{ 
-
-            console.log(`elemento ${index}`);
-        }} />
+        <Filter items={[ {text: "Cargar todos", filter: "TODOS"} , 
+            {text: "Cargar no resueltos", filter: "NOASIGNADO"},
+            {text: "Cargar resueltos", filter: "RESUELTO"},
+            {text: "Creados por mi", filter: "ASIGNADOS_A_MI"}
+        ]} onItemClick={filter=> setFilter(filter) } />
 
         <Text fontFamily='Roboto' margin={0}>
             Mostrando los ultimos 30 tickets
         </Text>
         
-        {tickets.map(x=> <UserTicket ticket={x} />)}
+        <Text display={isLoading ? "block" : "none"} fontStyle="italic">
+            Cargando tickets...
+        </Text>
+
+        {selectedTicket != null ?  <TicketDetails onClosed={()=> setSelectedTicket(undefined)} ticket={selectedTicket} /> : null}
+        {tickets.map(x=> <UserTicket ticket={x} onClick={x=> setSelectedTicket(x) }/>)}
         
         <Flex  flexDir={"row"} display={tickets.length == 0 ? "flex" : "none"} gap={"4px"}>
             <Text fontFamily={'Roboto'} fontWeight={"bold"}>No tiene tickets registrados.</Text> 

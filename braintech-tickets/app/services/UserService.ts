@@ -9,7 +9,7 @@ export async function getUser(user : string, pass : string) : Promise<User> {
  
     return new Promise<User>(async (resolved, reject)=>{
 
-        const r =  await getDocs( query(collection(getFirestore(), "users"), where("user", "==", user)) );
+        const r =  await getDocs( query(collection(getFirestore(), "users"), where("user", "==", user.toUpperCase())) );
 
         r.forEach(async x=>{
             const data = x.data();
@@ -23,4 +23,17 @@ export async function getUser(user : string, pass : string) : Promise<User> {
         });
 
     });
+}
+
+export async function getAdminUsers() : Promise<Array<User>> {
+ 
+    const r =  await getDocs( query(collection(getFirestore(), "users"), where("level", "==", "ADMIN")) );
+    const users : User[] = [];
+    r.forEach(async x=>{
+        const data = x.data() as User;
+        data.id = x.id;
+        users.push(data);
+    });
+ 
+    return users;
 }

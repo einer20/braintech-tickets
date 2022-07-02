@@ -1,22 +1,30 @@
 import { useEffect, useState } from "react";
 import Ticket from "./models/Ticket";
 import User from "./models/User";
-import { getTickets } from "./services/TicketService";
+import { getTickets, TicketFilter } from "./services/TicketService";
+import useUser from "./useUser";
 
-
-export type TicketLoadType = "LoadAll" | "LoadNonClosed" | "LoadClosed" | "LoadCreatedByMe";
-
-export default function useTickets(user : User)
+export default function useTickets()
 {
+    const { user } = useUser();
+
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [tickets, setTickets] = useState<Ticket[]>([]);
-    const [filter, setFilter] = useState<TicketLoadType>();
+    const [filter, setFilter] = useState<TicketFilter>();
 
     useEffect(()=>{
-        
-    },[filter]);
+        if(user != null) {
+            setIsLoading(true)
+            getTickets(user, filter).then(x=>{
+                setTickets(x);
+                setIsLoading(false)
+            });
+        }
+       
+    },[filter, user]);
     
     return {
+        filter: filter,
         setFilter: setFilter,
         tickets: tickets,
         isLoading : isLoading

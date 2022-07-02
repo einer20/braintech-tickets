@@ -1,6 +1,8 @@
 import User from "./User";
 import { Timestamp } from "firebase/firestore";
 
+export type TicketState = "NOASIGNADO" | "ENPROGRESO" | "REVOCADO" | "RESUELTO";
+
 type Ticket = {
     id?: string,
     number : number,
@@ -9,8 +11,11 @@ type Ticket = {
     details : string,
     type : string,
     attachments?: Array<string>,
-    state: "NOASIGNADO" | "ENPROGRESO" | "REVOCADO" | "RESUELTO",
-    date : Timestamp
+    state: TicketState,
+    date : Timestamp,
+    updateDate? : Timestamp,
+    resolution?: string,
+    assignedTo?: User
 }
 
 export default Ticket;

@@ -1,5 +1,5 @@
-import Ticket from "../models/Ticket";
-import { getFirestore, addDoc,collection, setDoc, getDocs, where, doc, query} from '@firebase/firestore';
+import Ticket, { TicketState } from "../models/Ticket";
+import { getFirestore, addDoc,collection, setDoc, getDocs, where, doc, query, QueryConstraint} from '@firebase/firestore';
 import User from "../models/User";
 
 export async function createTicket(ticket : Ticket) {
@@ -10,8 +10,23 @@ export async function createTicket(ticket : Ticket) {
     return ticket;
 }
 
-export async function getTickets(user : User) {
-    const r = await getDocs(query(collection(getFirestore(), "tickets"), where("user.company.id", "==", user.company.id)));
+export type TicketFilter = TicketState | "TODOS" | "CREADOS_POR_MI" | "ASIGNADOS_A_MI";
+export async function getTickets(user : User, state : TicketFilter = "TODOS" ) {
+
+    const queries : QueryConstraint[] = [ where("user.company.id", "==", user.company.id) ];
+
+    if(state == "ASIGNADOS_A_MI") {
+        queries.push(where("assignedTo.id", "==", user.id!))
+    }
+    else if(state == "CREADOS_POR_MI") {
+        queries.push(where("user.id", "==", user.id!))
+    }
+    else if(state != "TODOS") {
+        queries.push(where("state", "==", state));
+    }
+
+    const r = await getDocs(query(collection(getFirestore(), "tickets"), ...queries ));
+
     const tickets : Ticket[] = [];
     r.forEach(x=>{
         const d = x.data() as Ticket;
@@ -22,7 +37,8 @@ export async function getTickets(user : User) {
     return tickets;
 }
 
+
 export function updateTicket( ticket : Ticket) {
-    const {id , ..._ticket} = ticket;
-   setDoc(doc(getFirestore(), "tickets", ticket.id!), _ticket);
+    const { id , ..._ticket} = ticket;
+    return setDoc(doc(getFirestore(), "tickets", id!), _ticket);
 }

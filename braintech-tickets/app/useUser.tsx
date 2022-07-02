@@ -15,6 +15,7 @@ export default function useUser() {
     return {
         user : user,
         setUser: (u : User)=>{
+            localStorage.clear();
             localStorage.setItem("user", JSON.stringify(u));
             setUser(u);
         }

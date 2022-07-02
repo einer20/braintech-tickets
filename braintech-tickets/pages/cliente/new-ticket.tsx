@@ -15,7 +15,7 @@ export default function NewTicket(props : Props) {
     const { user } = useUser();
     const toast = useToast();
 
-    const [form, setForm] = useState<{about: string, details : string, area: string}>({about:"", area:"", details: ""});
+    const [form, setForm] = useState<{about: string, details : string, area: string}>({about:"", area:"Emergencia", details: ""});
 
     const generateId = (ticket : Ticket)=>{
         return `${ticket.user.company.shortName}-${ticket.date.toDate().getDay()}`

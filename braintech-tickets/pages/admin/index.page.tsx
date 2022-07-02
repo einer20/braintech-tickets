@@ -1,94 +1,52 @@
 import Layout from "../Layout";
 import UserTicket from '../../app/user-ticket/UserTicket';
-import { Flex, Heading } from "@chakra-ui/react";
+import { Flex, Heading, Text } from "@chakra-ui/react";
 import Filter from "../../app/filter/Filter";
 import { getUser } from "../../app/services/UserService";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "../../firebaseConfig";
+import useUser from "../../app/useUser";
+import { useState } from "react";
+import useTickets from "../../app/useTickets";
+import { TicketFilter } from "../../app/services/TicketService";
+import Ticket from "../../app/models/Ticket";
+import TicketDetails from "./ticket-details";
 export default function Index()
 {
-
+    const {user} = useUser();
+    const [showCreateNewTicket, setShowCreateNewTicket] = useState<boolean>(false);
+    const { filter, setFilter, tickets, isLoading } = useTickets();
+    const [selectedTicket, setSelectedTicket] = useState<Ticket>();
 
     return <Layout>
 
         <Flex flexDir={"column"} gap="10px">
 
-        <Heading fontFamily={"Roboto"}>
-                Tickets
-        </Heading>
+            <Heading fontFamily={"Roboto"}>
+                    Tickets
+            </Heading>
 
-        <Filter items={[
-            "Cargar todos" , "Cargar no resueltos", "Cargar resueltos"
-        ]} onItemClick={index=>{ 
+            <Filter items={[ {text: "Cargar todos", filter: "TODOS"} , 
+                {text: "Cargar no resueltos", filter: "NOASIGNADO"},
+                {text: "Asignados a mi", filter: "ASIGNADOS_A_MI"}
+            ]} onItemClick={filter=> setFilter(filter) } />
 
-            console.log(`elemento ${index}`);
-        }} />
+            <Text fontFamily='Roboto' margin={0}>
+                Mostrando los ultimos 30 tickets
+            </Text>
+            <Text display={isLoading ? "block" : "none"} fontStyle="italic">
+                Cargando tickets...
+            </Text>
 
-        <UserTicket ticket={{
-            id: 3234,
-            about :"ADMISION LANZANDO UN ERROR",
-            details: "no me permite ingresar pacientes en el area de admision",
-            state: "ACTIVO",
-            type: "emergencia",
-            attachments:[],
-            user: {
-                user: "ESANTANA",
-                email: "einersantanar@gmail.com",
-                fullName: "EINER SANTANA",
-                level: "CLIENT",
-                company: {
-                    email :"braintechrd@hotmail.com",
-                    name: "BRAIN TECH RD",
-                    shortName: "BrainTech",
-                    slogan: "BRAIN TECH"
-                }
-            }
-        }} />
+            {selectedTicket != null ?  <TicketDetails onTicketUpdated={t=> {
+                setFilter(filter);
+                setSelectedTicket(undefined);
+            }} onClosed={()=> setSelectedTicket(undefined)} ticket={selectedTicket} /> : null}
+            {tickets.map(x=> <UserTicket ticket={x} onClick={x=> setSelectedTicket(x) }/>)}
 
-        <UserTicket ticket={{
-            id: 887,
-            about :"REPORTE INVENTARIO ERROR AL CARGAR",
-            details: "no me permite ingresar pacientes en el area de admision",
-            state: "ENPROGRESO",
-            type: "emergencia",
-            attachments:[],
-            user: {
-                user: "ASANTANA",
-                email: "einersantanar@gmail.com",
-                fullName: "ANER SANTANA",
-                level: "CLIENT",
-                company: {
-                    email :"braintechrd@hotmail.com",
-                    name: "CEDIMAT",
-                    shortName: "CEDIMAT",
-                    slogan: "BRAIN TECH"
-                }
-            }
-        }} />
-
-<UserTicket ticket={{
-            id: 7853,
-            about :"ADMISION LANZANDO UN ERROR",
-            details: "no me permite ingresar pacientes en el area de admision",
-            state: "RESUELTO",
-            type: "emergencia",
-            attachments:[],
-            user: {
-                user: "GA",
-                email: "einersantanar@gmail.com",
-                fullName: "GATELLANA ALMONTE",
-                level: "CLIENT",
-                company: {
-                    email :"braintechrd@hotmail.com",
-                    name: "BRAIN TECH RD",
-                    shortName: "IRMIE",
-                    slogan: "BRAIN TECH"
-                }
-            }
-        }} />
-
-        </Flex>
-        
-     
+            <Flex flexDir={"row"} display={tickets.length == 0 ? "flex" : "none"} gap={"4px"}>
+                <Text fontFamily={'Roboto'} fontWeight={"bold"}>No se encontraron tickets.</Text> 
+            </Flex>
+        </Flex>     
     </Layout>
 }
