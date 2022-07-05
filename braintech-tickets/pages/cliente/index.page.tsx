@@ -16,7 +16,7 @@ export default function Index()
     const {user} = useUser();
     const [showCreateNewTicket, setShowCreateNewTicket] = useState<boolean>(false);
     const [ currentFilter, setCurrentFilter] = useState<TicketFilter>("TODOS_CLIENTE");
-    const { setFilter, tickets, isLoading } = useTickets();
+    const { setFilter, tickets, isLoading, reload } = useTickets();
     const [selectedTicket, setSelectedTicket] = useState<Ticket>();
 
     return <Layout>
@@ -51,7 +51,7 @@ export default function Index()
         </Flex>
 
         {showCreateNewTicket ? <NewTicket onCreate={t=>{
-            setFilter(currentFilter);
+            reload();
             setShowCreateNewTicket(false);
          }} onCancel={()=> setShowCreateNewTicket(false)} show={true}/> : null}
         
@@ -71,7 +71,7 @@ export default function Index()
         </Text>
 
         {selectedTicket != null ?  <TicketDetails onClosed={()=> setSelectedTicket(undefined)} ticket={selectedTicket} /> : null}
-        {tickets.map(x=> <UserTicket ticket={x} onClick={x=> setSelectedTicket(x) }/>)}
+        {tickets.map(x=> <UserTicket key={x.id} ticket={x} onClick={x=> setSelectedTicket(x) }/>)}
         
         <Flex  flexDir={"row"} display={tickets.length == 0 ? "flex" : "none"} gap={"4px"}>
             <Text fontFamily={'Roboto'} fontWeight={"bold"}>No tiene tickets registrados.</Text> 

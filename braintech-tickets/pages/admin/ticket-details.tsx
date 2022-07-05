@@ -79,11 +79,17 @@ export default function TicketDetails(props : {ticket  : Ticket, onTicketUpdated
     return <Modal size={"xl"} isOpen={true} onClose={()=>{}}>
         <ModalOverlay />
         <ModalContent>
-            <ModalHeader>{ticket.about.toUpperCase()} - {ticket.user.company.shortName}</ModalHeader>
+            <ModalHeader>#{ticket.number}</ModalHeader>
             <ModalCloseButton onClick={props.onClosed}/>
             <ModalBody>
                 
                 <Flex gap={"10px"} flexDir={"column"}>
+                    <Flex>
+                        <Text>
+                            {ticket.about.toUpperCase()} - {ticket.user.company.shortName}
+                        </Text>
+                    </Flex>
+
                     <Flex flexDir={"row"} gap="20px">
                         <Flex flexDir={"column"}>
                         <Text fontWeight={'bold'} fontFamily={'Roboto'}>Asignado a:</Text>
@@ -133,7 +139,7 @@ export default function TicketDetails(props : {ticket  : Ticket, onTicketUpdated
             </ModalBody>
             <ModalFooter>
                  
-                <Button colorScheme={"pink"} mr={3} onClick={devolver}>
+                <Button colorScheme={"pink"} mr={3} display={ticket.state == "RESUELTO" ? "inline-block" : "none"} onClick={devolver}>
                     Reabrir
                 </Button>
 

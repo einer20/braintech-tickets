@@ -30,17 +30,19 @@ export default function UserTicket(props : UserTicketProps) {
             props.onClick(ticket);
         }
     }}>
-        <Flex flexDir={"row"} gap={"10px"} alignItems={"center"} flex={2}>
+        <Flex flexDir={"row"} gap={"10px"} alignItems={"center"} flex={3}>
             <Flex width={"6px"} background={colors[props.ticket.state]}height={"100%"}>
-
             </Flex>
-            <UserInitials size="sm" userFullName={ticket.user.user} />
+            <Text fontFamily='Roboto' fontWeight={'bold'}>
+                #{ticket.number}
+            </Text>
+           <UserInitials size="sm" userFullName={ticket.user.user} />
            <Flex flexDirection={"column"} gap="0px">
-            <Text>{ticket.user.fullName}</Text>
-            <Text fontWeight={'bold'} fontFamily='Roboto' color="blackAlpha.500">{ticket.user.company.shortName}</Text>
+                <Text>{ticket.user.fullName}</Text>
+                <Text fontWeight={'bold'} fontFamily='Roboto' color="blackAlpha.500">{ticket.user.company.shortName}</Text>
            </Flex>
         </Flex>
-        <Flex flexDir={"row"} alignItems={"center"} gap={"10px"} flex={6}>
+        <Flex flexDir={"row"} alignItems={"center"} gap={"10px"} flex={5}>
             <Tag type={ticket.type} text={ticket.type} />
             <Text>{ticket.about}</Text>
         </Flex>

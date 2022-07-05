@@ -1,8 +1,8 @@
+import React from "react";
 import { Box, Heading, Text, Flex, ChakraProvider } from "@chakra-ui/react";
 import { initializeApp } from "firebase/app";
 import Head from "next/head";
 import { useEffect } from "react";
-import { getUser, getUserByAuthId } from "../app/services/UserService";
 import UserInitials from "../app/UserInitials";
 import useUser from "../app/useUser";
 import { firebaseConfig } from "../firebaseConfig";

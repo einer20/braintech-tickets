@@ -1,13 +1,26 @@
 import Ticket, { TicketState } from "../models/Ticket";
-import { getFirestore, addDoc,collection, setDoc, getDocs, where, doc, query, QueryConstraint} from '@firebase/firestore';
+import { getFirestore, increment, addDoc, getDoc,collection, setDoc, updateDoc, getDocs, where, doc, query, QueryConstraint} from '@firebase/firestore';
 import User from "../models/User";
 
 export async function createTicket(ticket : Ticket) {
+
+    ticket.number = await getNewTicketId();
     ticket.state = "NOASIGNADO";
     const r = await addDoc(collection(getFirestore(), "tickets"), ticket);
     ticket.id = r.id;
 
     return ticket;
+}
+
+const getNewTicketId = async ()=>{
+    // incrementamos el valor
+    const ticketConfigRef = doc(collection(getFirestore(), "config"),"ticket-ids");
+    
+    return updateDoc(ticketConfigRef,{ total : increment(1) }).then(async x=>{
+        const r = await getDoc(ticketConfigRef);
+        const ticketInfo = r.data() as { total : number };
+        return ticketInfo.total;
+    });
 }
 
 export type TicketFilter = TicketState | "TODOS_CLIENTE" | "TODOS_ADMIN" | "CREADOS_POR_MI" | "ASIGNADOS_A_MI" | "NO_RESUELTOS";
