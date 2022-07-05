@@ -5,7 +5,7 @@ import LoginLayout from "./LoginLayout";
 import Image from "next/image";
 import LinkButton from "../../app/button/LinkButton";
 import useUser from "../../app/useUser";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "../../firebaseConfig";
 import { getUserByAuthId, getUserByEmail } from "../../app/services/UserService";
@@ -41,13 +41,22 @@ export default function Login()
         e.preventDefault();
 
         try{
-           
             const r = await signInWithEmailAndPassword(auth, form.username, form.password);
-            console.log(r);
-            
         }catch(e) {
-            toast({ title: "Usuario o contrasena invalido", duration: 2000 });
+            toast({ title: "Usuario o contrasena invalido", duration: 2000, status: "error" });
         }
+   }
+
+   const resetPass = async ()=> {
+        if(form.username.trim().length == 0) {
+            toast({ title:"Usuario es requerido", status: "error" })
+        }
+        else if(window.confirm("Seguro que desea reiniciar su contrasena?")){
+            const response = await sendPasswordResetEmail(auth, form.username);
+            console.log(response);
+            toast({title: "Verifique su correo electronico", description: "Verifique su correo electrico para poder restablecer su contrasena", status: "info", duration: 60000})
+        }
+    
    }
 
     return <LoginLayout>
@@ -90,8 +99,7 @@ export default function Login()
                     </Flex>
                     <Flex flexDir={"column"} gap="10px">
                         <Flex gap={"5px"} alignItems={"center"}>
-                            <Text>No tienes cuenta?</Text>
-                            <LinkButton text={"Crear cuenta"}/>
+                            <LinkButton text={"Olvide mi contraseña"} onClick={resetPass}/>
                         </Flex>
                     </Flex>
                 </Flex>

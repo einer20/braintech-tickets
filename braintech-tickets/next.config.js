@@ -11,6 +11,10 @@ const nextConfig = {
       },
     ]
   },
+
+  publicRuntimeConfig: {
+    NEXT_PUBLIC_MAX_ATTACHMENT_SIZE : process.env.NEXT_PUBLIC_MAX_ATTACHMENT_SIZE
+  }
 }
 
 module.exports = nextConfig

@@ -2,7 +2,6 @@ import { Box, Button, ChakraProvider, Flex, Img, Input, Text } from "@chakra-ui/
 import Head from "next/head";
 import Image from "next/image";
 import React from "react";
-import LinkButton from "../../app/button/LinkButton";
 
 export default function LoginLayout(props : {children : JSX.Element | JSX.Element[]})
 {

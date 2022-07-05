@@ -1,6 +1,8 @@
 import { Modal, ModalContent, ModalHeader, ModalOverlay, ModalBody, ModalCloseButton, ModalFooter, Button, Flex, Text, Input, Textarea, Select, useToast } from "@chakra-ui/react";
 import { Timestamp } from "firebase/firestore";
-import { useState } from "react";
+import Link from "next/link";
+import { ChangeEvent, useRef, useState } from "react";
+import LinkButton from "../../app/button/LinkButton";
 import Ticket from "../../app/models/Ticket";
 import { createTicket } from "../../app/services/TicketService";
 import useUser from "../../app/useUser";
@@ -14,8 +16,9 @@ export default function NewTicket(props : Props) {
 
     const { user } = useUser();
     const toast = useToast();
-
     const [form, setForm] = useState<{about: string, details : string, area: string}>({about:"", area:"Emergencia", details: ""});
+    const inputFileRef = useRef<HTMLInputElement>(null);
+    const [attachments, setAttachments] = useState<Array<{fileName: string}>>([]);
 
     const generateId = (ticket : Ticket)=>{
         return `${ticket.user.company.shortName}-${ticket.date.toDate().getDay()}`
@@ -41,6 +44,23 @@ export default function NewTicket(props : Props) {
         }
     }
 
+    const onFileSelected = (e : ChangeEvent<HTMLInputElement>)=>{
+        const sizeLimit : number = 3547398;
+        for(var i = 0; i < e.target.files!.length; i++)
+        {
+            const f =  e.target.files![i];
+            
+            if(f.size > sizeLimit) {
+                toast({ title:"Archivo no pude ser mayor a 300kb", status:"error" });
+            }
+            else {
+                attachments.push({fileName: e.target.files![i].name});
+            }
+            
+        }
+        setAttachments([...attachments]);
+    }
+
     return  <Modal size={"xl"} isOpen={props.show} onClose={props.onCancel}>
         <ModalOverlay />
         <ModalContent>
@@ -64,7 +84,7 @@ export default function NewTicket(props : Props) {
             </Flex>        
         
             <Flex flexDir={"column"}>
-                <Text fontFamily={'Roboto'} fontWeight={"bold"}  color="black">Acerca de</Text>
+                <Text fontFamily={'Roboto'} fontWeight={"bold"} color="black">Acerca de</Text>
                 <Text fontFamily={'Roboto'} color={'blackAlpha.700'}>Agrege una breve descripcion descripcion de su situacion</Text>
                 <Input 
                     placeholder="" 
@@ -96,9 +116,13 @@ export default function NewTicket(props : Props) {
                 <Text fontFamily={"Roboto"} color="blackAlpha.700">
                     Solo puede subir 2 imagenes
                </Text>
-               <Button width={"70%"}>
+               <input type="file" style={{visibility:'hidden', position:'absolute', top: "10000px"}} ref={inputFileRef} multiple onChange={onFileSelected}/>
+               <Button width={"70%"} onClick={x=> inputFileRef.current?.click() }>
                     Seleccionar Imagenes desde mi PC
                </Button>
+               <Flex flexDir={"row"} gap={"6px"} margin="5px 0px">
+                    {attachments.map((x, index)=> <LinkButton key={index} text={x.fileName} />)}
+               </Flex>
             </Flex>
         </Flex>
 
