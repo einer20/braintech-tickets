@@ -1,5 +1,5 @@
 
-import { getFirestore,where, query, addDoc,collection, setDoc, getDocs, getDoc, doc} from '@firebase/firestore';
+import { getFirestore,where, query, addDoc,collection, setDoc, getDocs, getDoc, doc, QueryConstraint} from '@firebase/firestore';
 import { initializeApp } from 'firebase/app';
 import { firebaseConfig } from '../../firebaseConfig';
 import Company from '../models/Company';
@@ -9,7 +9,15 @@ export async function getUser(user : string, pass : string) : Promise<User> {
  
     return new Promise<User>(async (resolved, reject)=>{
 
-        const r =  await getDocs( query(collection(getFirestore(), "users"), where("user", "==", user.toUpperCase())) );
+        const queries : QueryConstraint[] = [where("user", "==", user.toUpperCase())];
+
+        if(pass.trim().length > 0)
+        {
+            debugger;
+            queries.push(where("pass","==", pass));
+        }
+
+        const r =  await getDocs( query(collection(getFirestore(), "users"), ...queries) );
 
         r.forEach(async x=>{
             const data = x.data();
@@ -21,6 +29,10 @@ export async function getUser(user : string, pass : string) : Promise<User> {
     
             resolved(u);
         });
+        if(r.empty) {
+            reject({  userNull: true });
+        }
+        
 
     });
 }

@@ -3,6 +3,7 @@ import { Button, Flex, Select, Text, Textarea, useToast } from "@chakra-ui/react
 import { Timestamp } from "firebase/firestore";
 import moment from "moment";
 import { useState } from "react";
+import LinkButton from "../../app/button/LinkButton";
 import Ticket from "../../app/models/Ticket";
 import User from "../../app/models/User";
 import { updateTicket } from "../../app/services/TicketService";
@@ -70,6 +71,10 @@ export default function TicketDetails(props : {ticket  : Ticket, onTicketUpdated
         });
     }
 
+    const loadAssignnee= ()=>{
+        loadUsers();
+    }
+
     return <Modal size={"xl"} isOpen={true} onClose={()=>{}}>
         <ModalOverlay />
         <ModalContent>
@@ -78,9 +83,25 @@ export default function TicketDetails(props : {ticket  : Ticket, onTicketUpdated
             <ModalBody>
                 
                 <Flex gap={"10px"} flexDir={"column"}>
-                    <Flex flexDir={"column"}>
-                        <Text fontWeight={'bold'} fontFamily={'Roboto'}>ESTADO</Text>
-                        <Text>{ticket.state}</Text>
+                    <Flex flexDir={"row"} gap="20px">
+                        <Flex flexDir={"column"}>
+                        <Text fontWeight={'bold'} fontFamily={'Roboto'}>Asignado a:</Text>
+                        <LinkButton text={ticket.assignedTo?.user?.toUpperCase() || "No se ha asignado a nadie"} onClick={loadAssignnee}/>
+                        <Select display={users.length == 0 ? "none" : "block"} onChange={x=>{
+                                if(x.target.selectedIndex > 0) {
+                                    const user = users[x.target.selectedIndex-1];
+                                    updateAssignee( user );
+                                    
+                                } 
+                            }}>
+                                <option></option>
+                            {users.map((x,index)=> <option key={index} selected={ticket.assignedTo?.id == x.id} value={index}>{x.user.toUpperCase()}</option>)}
+                        </Select>
+                        </Flex>
+                        <Flex flexDir={"column"}>
+                            <Text fontWeight={'bold'} fontFamily={'Roboto'}>Estado:</Text>
+                            <Text>{ticket.state}</Text>
+                        </Flex>
                     </Flex>
                     <Flex flexDir={"column"}>
                         <Text fontWeight={'bold'}>
@@ -95,24 +116,9 @@ export default function TicketDetails(props : {ticket  : Ticket, onTicketUpdated
                     </Flex>
                     <Flex flexDir={"column"}>
                         <Text fontWeight={'bold'} fontFamily={'Roboto'}>Detalles:</Text>
-                        <Text>{ticket.about}</Text>
+                        <Text>{ticket.details}</Text>
                     </Flex>
-                   
-                    <Flex flexDir={"column"}>
-                      <Text fontWeight={'bold'} fontFamily={'Roboto'}>Asignado a: {ticket.assignedTo?.user?.toUpperCase()}</Text>
-                       <Select onClick={loadUsers} onChange={x=>{
-                            if(x.target.selectedIndex > 0)
-                            {
-                                const user = users[x.target.selectedIndex-1];
-                                updateAssignee( user );
-                                
-                            }
-
-                       }}>
-                            <option></option>
-                            {users.map((x,index)=> <option key={index} selected={ticket.assignedTo?.id == x.id} value={index}>{x.user.toUpperCase()}</option>)}
-                        </Select>
-                    </Flex>
+                
                     <Flex flexDir={"column"}>
                         <Text fontWeight={'bold'} fontFamily={'Roboto'}>Resolucion:</Text>
                         <Textarea value={closeReason} onChange={x=> {

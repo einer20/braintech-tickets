@@ -6,7 +6,7 @@ import { getUser } from "../../app/services/UserService";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "../../firebaseConfig";
 import useUser from "../../app/useUser";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useTickets from "../../app/useTickets";
 import { TicketFilter } from "../../app/services/TicketService";
 import Ticket from "../../app/models/Ticket";
@@ -18,6 +18,16 @@ export default function Index()
     const { filter, setFilter, tickets, isLoading } = useTickets();
     const [selectedTicket, setSelectedTicket] = useState<Ticket>();
 
+    useEffect(()=>{
+        if(user != null && user.level == "CLIENT") {
+            window.history.back();
+            alert("Esto es solo para administradores");
+        }
+        else{
+            setFilter("ASIGNADOS_A_MI")
+        }
+    },[]);
+
     return <Layout>
 
         <Flex flexDir={"column"} gap="10px">
@@ -26,7 +36,7 @@ export default function Index()
                     Tickets
             </Heading>
 
-            <Filter items={[ {text: "Cargar todos", filter: "TODOS"} , 
+            <Filter items={[ {text: "Cargar todos", filter: "TODOS_ADMIN"} , 
                 {text: "Cargar no resueltos", filter: "NOASIGNADO"},
                 {text: "Asignados a mi", filter: "ASIGNADOS_A_MI"}
             ]} onItemClick={filter=> setFilter(filter) } />

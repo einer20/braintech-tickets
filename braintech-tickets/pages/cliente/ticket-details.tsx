@@ -37,7 +37,7 @@ export default function TicketDetails(props : {ticket  : Ticket, onClosed : ()=>
                     </Flex>
                     <Flex flexDir={"column"}>
                         <Text fontWeight={'bold'} fontFamily={'Roboto'}>Detalles:</Text>
-                        <Text>{ticket.about}</Text>
+                        <Text>{ticket.details}</Text>
                     </Flex>
                     <Flex flexDir={"column"}>
                         <Text fontWeight={'bold'} fontFamily={'Roboto'}>Resolucion:</Text>

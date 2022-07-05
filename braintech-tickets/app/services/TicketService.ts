@@ -10,10 +10,15 @@ export async function createTicket(ticket : Ticket) {
     return ticket;
 }
 
-export type TicketFilter = TicketState | "TODOS" | "CREADOS_POR_MI" | "ASIGNADOS_A_MI";
-export async function getTickets(user : User, state : TicketFilter = "TODOS" ) {
+export type TicketFilter = TicketState | "TODOS_CLIENTE" | "TODOS_ADMIN" | "CREADOS_POR_MI" | "ASIGNADOS_A_MI" | "NO_RESUELTOS";
+export async function getTickets(user : User, state : TicketFilter = "TODOS_ADMIN" ) {
+   
+    const queries : QueryConstraint[] = [  ];
 
-    const queries : QueryConstraint[] = [ where("user.company.id", "==", user.company.id) ];
+    // si es un ciente, solo cargar los tickest de su compania
+    if(user.level == "CLIENT") {
+        queries.push(where("user.company.id", "==", user.company.id));
+    }
 
     if(state == "ASIGNADOS_A_MI") {
         queries.push(where("assignedTo.id", "==", user.id!))
@@ -21,7 +26,11 @@ export async function getTickets(user : User, state : TicketFilter = "TODOS" ) {
     else if(state == "CREADOS_POR_MI") {
         queries.push(where("user.id", "==", user.id!))
     }
-    else if(state != "TODOS") {
+    else if(state == "NO_RESUELTOS") {
+        debugger;
+        queries.push(where("state", "!=" , "RESUELTO"));
+    }
+    else if(state != "TODOS_ADMIN" && state != "TODOS_CLIENTE") {
         queries.push(where("state", "==", state));
     }
 

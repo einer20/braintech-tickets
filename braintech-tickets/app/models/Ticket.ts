@@ -3,6 +3,28 @@ import { Timestamp } from "firebase/firestore";
 
 export type TicketState = "NOASIGNADO" | "ENPROGRESO" | "REVOCADO" | "RESUELTO";
 
+export type TicketEvent = {
+
+    /**
+     * Tipo de event
+     */
+    type : "ESTADO_ACTUALIZADO" | "ASIGNADO",
+
+    /**
+     * Comentarios del evento
+     */
+    comment: string,
+    /**
+     * Usuario que realizo la accion
+     */
+    user: string,
+
+    /**
+     * Fecha del evento
+     */
+    date: Timestamp
+}
+
 type Ticket = {
     id?: string,
     number : number,
@@ -15,7 +37,8 @@ type Ticket = {
     date : Timestamp,
     updateDate? : Timestamp,
     resolution?: string,
-    assignedTo?: User
+    assignedTo?: User,
+    events?: Array<TicketEvent>
 }
 
 export default Ticket;

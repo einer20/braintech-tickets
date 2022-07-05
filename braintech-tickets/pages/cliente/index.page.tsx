@@ -15,7 +15,7 @@ export default function Index()
 
     const {user} = useUser();
     const [showCreateNewTicket, setShowCreateNewTicket] = useState<boolean>(false);
-    const [ currentFilter, setCurrentFilter] = useState<TicketFilter>("TODOS");
+    const [ currentFilter, setCurrentFilter] = useState<TicketFilter>("TODOS_CLIENTE");
     const { setFilter, tickets, isLoading } = useTickets();
     const [selectedTicket, setSelectedTicket] = useState<Ticket>();
 
@@ -56,8 +56,8 @@ export default function Index()
          }} onCancel={()=> setShowCreateNewTicket(false)} show={true}/> : null}
         
 
-        <Filter items={[ {text: "Cargar todos", filter: "TODOS"} , 
-            {text: "Cargar no resueltos", filter: "NOASIGNADO"},
+        <Filter items={[ {text: "Cargar todos", filter: "TODOS_CLIENTE"} , 
+            {text: "Cargar no resueltos", filter: "NO_RESUELTOS"},
             {text: "Cargar resueltos", filter: "RESUELTO"},
             {text: "Creados por mi", filter: "ASIGNADOS_A_MI"}
         ]} onItemClick={filter=> setFilter(filter) } />

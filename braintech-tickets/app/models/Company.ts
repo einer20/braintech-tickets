@@ -5,6 +5,7 @@ type Company = {
     name : string,
     shortName : string,
     slogan: string,
+    logo: string
 }
 
 export default Company;
