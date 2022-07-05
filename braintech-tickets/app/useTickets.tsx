@@ -21,7 +21,7 @@ export default function useTickets()
         {
             setIsLoading(true)
             getTickets(user, filter).then(x=>{
-                setTickets([...x]);
+                setTickets(x.sort((a,b)=> (b.date.toMillis() - a.date.toMillis())));
                 setIsLoading(false)
             });
         }

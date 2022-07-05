@@ -1,3 +1,4 @@
+import { CheckCircleIcon } from "@chakra-ui/icons";
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from "@chakra-ui/modal";
 import { Button, Flex, Select, Text, Textarea, useToast } from "@chakra-ui/react";
 import { Timestamp } from "firebase/firestore";
@@ -34,6 +35,7 @@ export default function TicketDetails(props : {ticket  : Ticket, onTicketUpdated
             const t = {...ticket};
             t.state = "RESUELTO";
             t.updateDate = Timestamp.now();
+            t.resolution = closeReason;
             
             const r = await updateTicket(t);
             toast({ title: "Ticket cerrado exitosamente", duration: 1000, status: "success" });
@@ -42,14 +44,11 @@ export default function TicketDetails(props : {ticket  : Ticket, onTicketUpdated
     }
 
     const devolver = async ()=>{
-        if(closeReason == undefined || closeReason?.length == 0)
-        {
-            toast({ title: "Resolucion es requerida", duration: 1000, status: "error" });
-        }
-        else if(window.confirm("Seguro que desea realizar esta accion?")) {
+        if(window.confirm("Seguro que desea reabrir el ticket?")) {
             const t = {...ticket};
-            t.state = "REVOCADO";
+            t.state = "ENPROGRESO";
             t.updateDate = Timestamp.now();
+            t.resolution = closeReason || "";
             
             const r = await updateTicket(t);
             toast({ title: "Ticket devuelto exitosamente", duration: 1000, status: "success" });
@@ -123,26 +122,27 @@ export default function TicketDetails(props : {ticket  : Ticket, onTicketUpdated
                 
                     <Flex flexDir={"column"}>
                         <Text fontWeight={'bold'} fontFamily={'Roboto'}>Resolucion:</Text>
-                        <Textarea value={closeReason} onChange={x=> {
+                        <Textarea disabled={ticket.state == "RESUELTO"} title={ticket.state == "RESUELTO" ? "Para editar el comentario, tiene que reabrir el ticket" : ""} value={closeReason} onChange={x=> {
                             setCloseReason(x.target.value);
                         }} />
                     </Flex>
                     <Flex flexDir={"row"} gap="10px">
-                        <Button colorScheme={"red"} mr={3} onClick={devolver}>
-                            Devolver
-                        </Button>
-
-                        <Button colorScheme={"green"} mr={3} onClick={x=> closeTicket()}>
-                            Finalizar ticket
-                        </Button>
+                        
                     </Flex>
                 </Flex>
             </ModalBody>
             <ModalFooter>
                  
-              
-                <Button colorScheme={"gray"} mr={3} onClick={props.onClosed}>
-                    Cancelar
+                <Button colorScheme={"pink"} mr={3} onClick={devolver}>
+                    Reabrir
+                </Button>
+
+                <Button colorScheme={"gray"} mr={3} onClick={x=> closeTicket()}>
+                    Marcar como resuelto
+                </Button>
+                 
+                <Button colorScheme={"green"} mr={5} onClick={props.onClosed}>
+                    Cerrar ventana
                 </Button>
             </ModalFooter>
         </ModalContent>
