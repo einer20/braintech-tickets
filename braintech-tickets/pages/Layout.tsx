@@ -2,28 +2,48 @@ import { Box, Heading, Text, Flex, ChakraProvider } from "@chakra-ui/react";
 import { initializeApp } from "firebase/app";
 import Head from "next/head";
 import { useEffect } from "react";
-import { getUser } from "../app/services/UserService";
+import { getUser, getUserByAuthId } from "../app/services/UserService";
 import UserInitials from "../app/UserInitials";
 import useUser from "../app/useUser";
 import { firebaseConfig } from "../firebaseConfig";
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 
 export default function Layout(props : { children : JSX.Element | JSX.Element[]})
 {
     const {user, setUser} = useUser();
-     
+    const auth = getAuth(initializeApp(firebaseConfig));
+
     useEffect(()=>{
-        initializeApp(firebaseConfig);
-    });
+        onAuthStateChanged(auth,(x)=>{
+            if(x == null) {
+                window.location.href = "/login"
+            }
+        });
+    },[]);
+
+    const logOut = ()=>{
+        if(confirm("Seguro que desea salir?"))
+        {
+            signOut(auth);
+        }
+      
+    }
 
     return <>
     <ChakraProvider>
         <Head>
+            <title>BrainTech RD - Tickets</title>
         </Head>
+
+        {auth.currentUser == null ? <div>Verificando...</div> : <>
         <Box css={{
             position:"fixed",
             top:"0px",
+            left:"0px",
             width:"100%",
-            marginTop:"10px"
+            background:"#f9f9f9",
+            borderBottom:"solid 1px #ccc",
+            zIndex:1
         }}>
         <Box margin={"10px auto"} width={{
             base:"95%",
@@ -34,7 +54,7 @@ export default function Layout(props : { children : JSX.Element | JSX.Element[]}
             flexDirection="row"
             justifyContent={"space-between"}
             >
-            <Heading padding={0} margin={0} size={"lg"} fontFamily={"Roboto"}>
+            <Heading lineHeight={"inherit"} padding={0} margin={0} size={"lg"} fontFamily={"Roboto"}>
                 BRAINTECH - Soporte Tecnico 
             </Heading>
             <Flex flexDir={"row"} gap="20px" alignItems={"center"}>
@@ -47,12 +67,15 @@ export default function Layout(props : { children : JSX.Element | JSX.Element[]}
                     </Flex>
                 </Flex>
 
-                <Text color="blue" fontWeight={"bold"} fontFamily="Roboto" cursor={'pointer'} 
+                <Text color="blue" 
+                    fontWeight={"bold"}
+                    fontFamily="Roboto" 
+                    cursor={'pointer'} 
                     userSelect={"none"}
                     _hover={{
                         borderBottom:"dotted 1px blue"
                     }}
-                >
+                    onClick={logOut}>
                     SALIR
                 </Text>
             </Flex>
@@ -66,6 +89,9 @@ export default function Layout(props : { children : JSX.Element | JSX.Element[]}
         }}>
             {props.children}
         </Box>
+        </>}
+
+       
     </ChakraProvider>
     </>
 }

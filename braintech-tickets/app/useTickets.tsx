@@ -13,20 +13,25 @@ export default function useTickets()
     const [filter, setFilter] = useState<TicketFilter>();
 
     useEffect(()=>{
-        if(user != null) {
+        load();
+    },[filter, user]);
+
+    const load = ()=>{
+        if(user != null)
+        {
             setIsLoading(true)
             getTickets(user, filter).then(x=>{
-                setTickets(x);
+                setTickets([...x]);
                 setIsLoading(false)
             });
         }
-       
-    },[filter, user]);
+    }
     
     return {
         filter: filter,
         setFilter: setFilter,
         tickets: tickets,
-        isLoading : isLoading
+        isLoading : isLoading,
+        reload: load
     };
 }

@@ -11,11 +11,12 @@ import useTickets from "../../app/useTickets";
 import { TicketFilter } from "../../app/services/TicketService";
 import Ticket from "../../app/models/Ticket";
 import TicketDetails from "./ticket-details";
+
 export default function Index()
 {
     const {user} = useUser();
     const [showCreateNewTicket, setShowCreateNewTicket] = useState<boolean>(false);
-    const { filter, setFilter, tickets, isLoading } = useTickets();
+    const { filter, setFilter, tickets, isLoading, reload } = useTickets();
     const [selectedTicket, setSelectedTicket] = useState<Ticket>();
 
     useEffect(()=>{
@@ -38,7 +39,7 @@ export default function Index()
 
             <Filter items={[ {text: "Cargar todos", filter: "TODOS_ADMIN"} , 
                 {text: "Cargar no resueltos", filter: "NOASIGNADO"},
-                {text: "Asignados a mi", filter: "ASIGNADOS_A_MI"}
+                {text: "Asignados a mi", filter: "ASIGNADOS_A_MI", selected: true}
             ]} onItemClick={filter=> setFilter(filter) } />
 
             <Text fontFamily='Roboto' margin={0}>
@@ -49,7 +50,7 @@ export default function Index()
             </Text>
 
             {selectedTicket != null ?  <TicketDetails onTicketUpdated={t=> {
-                setFilter(filter);
+                reload();
                 setSelectedTicket(undefined);
             }} onClosed={()=> setSelectedTicket(undefined)} ticket={selectedTicket} /> : null}
             {tickets.map(x=> <UserTicket ticket={x} onClick={x=> setSelectedTicket(x) }/>)}

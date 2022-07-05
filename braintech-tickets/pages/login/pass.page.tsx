@@ -6,14 +6,15 @@ import Image from "next/image";
 import LinkButton from "../../app/button/LinkButton";
 import { ChevronLeftIcon } from "@chakra-ui/icons";
 import { GetServerSideProps } from "next";
-import { getUser } from "../../app/services/UserService";
+import { getUser, getUserByAuthId } from "../../app/services/UserService";
 import User from "../../app/models/User";
 import { parseBody } from "next/dist/server/api-utils/node";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "../../firebaseConfig";
 import FirebaseImg from "../../app/firebase-img/FirebaseImg";
 import useUser from "../../app/useUser";
-
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { getFirestore } from "firebase/firestore";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     
@@ -49,16 +50,25 @@ export default function Pass(props : {user : User})
     const toast = useToast();
     const { user, setUser } = useUser();
 
+    const auth = getAuth(initializeApp(firebaseConfig));
+
     useEffect(()=>{
         passRef.current?.focus();
+
+        onAuthStateChanged(auth, async (user)=>{
+            const u = await getUserByAuthId(user!.uid);
+            if(u.level == "ADMIN")
+                window.location.href = "/admin";
+            else 
+                window.location.href = "/cliente";
+        });
     },[]);
 
     const login = async ()=>{
         try{
             setFormState("LOGING_IN");
-            const user = await getUser(props.user.user, passRef.current!.value);
             setFormState("SUCCESS");
-            setUser(user);
+            
             if(user.level == "ADMIN")
                 window.location.href = "/admin";
             else 

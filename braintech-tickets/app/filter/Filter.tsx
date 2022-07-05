@@ -1,14 +1,19 @@
 import { Flex, Text } from "@chakra-ui/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { TicketFilter } from "../services/TicketService"
 
 export type FilterProps = {
-    items : Array<{text: string, filter : TicketFilter}>,
+    items : Array<{text: string, filter : TicketFilter, selected? : boolean}>,
     onItemClick : (filter : TicketFilter) => void
 }
 export default function Filter(props : FilterProps) {
 
-    const [activeIndex, setActiveIndex] = useState<number>(-1)
+    const [activeIndex, setActiveIndex] = useState<number>(-1);
+
+    useEffect(()=>{
+      const index =  props.items.findIndex(x=>x.selected == true);
+      setActiveIndex(index);
+    },[]);
 
     return <Flex padding={"5px 0px"} flexDir={"row"} gap="20px" alignItems={"center"}>
         {props.items.map((x,index) => <FilterButton onClick={()=>{

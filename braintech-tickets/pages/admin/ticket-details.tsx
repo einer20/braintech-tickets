@@ -69,6 +69,8 @@ export default function TicketDetails(props : {ticket  : Ticket, onTicketUpdated
             duration : 1000,
             status: "success"
         });
+
+        props.onTicketUpdated(t);
     }
 
     const loadAssignnee= ()=>{

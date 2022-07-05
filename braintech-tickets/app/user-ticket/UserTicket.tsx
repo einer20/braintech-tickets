@@ -8,11 +8,11 @@ export type UserTicketProps = {
     ticket : Ticket,
     onClick? : (t : Ticket) => void
 }
-const colors = {
+const colors  : any = {
     'NOASIGNADO' : '#8484841c',
-    'ENPROGRESO' : '#2196f342',
+    'ENPROGRESO' : '#2196f396',
     "REVOCADO" : "#f4433640",
-    "RESUELTO": "#8bc34a59"
+    "RESUELTO": "#8bc34aa6"
 };
 
 const types : any = {
@@ -23,14 +23,17 @@ const types : any = {
 export default function UserTicket(props : UserTicketProps) {
     const {ticket} = props;
     return <>
-    <Flex padding={"10px"} borderBottom="solid 1px #d8d8d8" _hover={{
+    <Flex padding={"10px 10px 10px 0px"} background="#f1f1f1" borderBottom="solid 1px #d8d8d8" _hover={{
         background:"#f9f9f9"
-    }} borderRadius={"2px"} cursor="pointer" onClick={x=> {
+    }} borderRadius={"4px"} cursor="pointer" onClick={x=> {
         if(props.onClick){
             props.onClick(ticket);
         }
     }}>
         <Flex flexDir={"row"} gap={"10px"} alignItems={"center"} flex={2}>
+            <Flex width={"6px"} background={colors[props.ticket.state]}height={"100%"}>
+
+            </Flex>
             <UserInitials size="sm" userFullName={ticket.user.user} />
            <Flex flexDirection={"column"} gap="0px">
             <Text>{ticket.user.fullName}</Text>
