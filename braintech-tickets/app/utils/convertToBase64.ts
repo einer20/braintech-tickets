@@ -18,5 +18,8 @@ export default function convertFileListToBase64(files : FileList) : Promise<Arra
 
             reader.readAsDataURL(files[i]);
         }
+
+        if(files.length == 0)
+            resolve([]);
     });
 }

@@ -25,7 +25,7 @@ export default function Index()
         else{
             setFilter("TODOS_CLIENTE")
         }
-    });
+    },[]);
 
     return <Layout>
         <Flex flexDir={"column"} gap="10px">

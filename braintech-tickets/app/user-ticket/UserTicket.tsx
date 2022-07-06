@@ -1,5 +1,6 @@
 import { Box, Flex, Text } from "@chakra-ui/react"
 import moment from "moment"
+import CompanyLogo from "../CompanyLogo"
 import Ticket from "../models/Ticket"
 import UserInitials from "../UserInitials"
 
@@ -30,26 +31,56 @@ export default function UserTicket(props : UserTicketProps) {
             props.onClick(ticket);
         }
     }}>
-        <Flex flexDir={"row"} gap={"10px"} alignItems={"center"} flex={3}>
-            <Flex width={"6px"} background={colors[props.ticket.state]}height={"100%"}>
+        <Flex flexDir={"row"} gap={"10px"} alignItems={"center"} flex={{
+            base: "3",
+            sm: "3",
+            md: "4",
+            lg:"3"
+        }}>
+            <Flex width={"6px"} background={colors[props.ticket.state]} height={"100%"}>
             </Flex>
             <Text fontFamily='Roboto' fontWeight={'bold'}>
                 #{ticket.number}
             </Text>
-           <UserInitials size="sm" userFullName={ticket.user.user} />
-           <Flex flexDirection={"column"} gap="0px">
+           <CompanyLogo company={ticket.user.company} />
+           <Flex flexDirection={"column"} gap="0px" display={{
+                base: "none",
+                sm: "none",
+                md: "flex",
+                lg: "flex"
+           }}>
                 <Text>{ticket.user.fullName}</Text>
                 <Text fontWeight={'bold'} fontFamily='Roboto' color="blackAlpha.500">{ticket.user.company.shortName}</Text>
            </Flex>
         </Flex>
-        <Flex flexDir={"row"} alignItems={"center"} gap={"10px"} flex={5}>
+        <Flex flexDir={{
+            base: "column",
+            sm: "column",
+            md: "column",
+            lg: "row"
+        }} alignItems={{
+            base:"flex-start",
+            sm:"flex-start",
+            md: "flex-start",
+            lg: "center"
+        }} gap={"5px"} flex={5}>
             <Tag type={ticket.type} text={ticket.type} />
             <Text>{ticket.about}</Text>
         </Flex>
-        <Flex flexDir={"row"} alignItems={"center"} gap={"10px"} flex={1}>
+        <Flex flexDir={"row"} alignItems={"center"} gap={"10px"} flex={1}  display={{
+                base: "none",
+                sm: "none",
+                md: "flex",
+                lg: "flex"
+           }}>
             {ticket.assignedTo == null ? <Text>No asignado</Text> : <UserInitials size="sm" userFullName={ticket.assignedTo?.user} />}
         </Flex>
-        <Flex flexDir={"row"} alignItems={"center"} gap={"10px"} flex={1}>
+        <Flex flexDir={"row"} alignItems={"center"} gap={"10px"} flex={1}  display={{
+                base: "none",
+                sm: "none",
+                md: "flex",
+                lg: "flex"
+           }}>
            <Text> {moment(ticket.date.toDate()).format("DD/MM/YY hh:mm")}</Text>
         </Flex>
     </Flex>

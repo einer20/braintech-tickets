@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
+
 const nextConfig = {
+  images: {
+    domains: ['firebasestorage.googleapis.com'],
+  },
   reactStrictMode: true,
   pageExtensions: ["page.tsx", "page.ts", "page.jsx"],
   async redirects() {

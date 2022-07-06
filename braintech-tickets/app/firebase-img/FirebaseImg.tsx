@@ -3,10 +3,11 @@ import { forwardRef, useEffect, useState } from "react";
 import { firebaseConfig } from "../../firebaseConfig";
 import { getDownloadURL, getStorage, ref, updateMetadata } from "firebase/storage";
 import { Button } from "@chakra-ui/react";
+import Image from "next/image";
 
 const  FirebaseImg = forwardRef<HTMLImageElement, { width?: number | string, height?: number | string, url : string, onFailed?: () => void }>(( props, fref) => 
 {
-    const [ imageState, setImageState ] = useState<"loading"  | "loaded" | "failed">();
+    const [ imageState, setImageState ] = useState<"loading"  | "loaded" | "failed">("loading");
     const [ imgUrl, setImgUrl] = useState<string>();
 
     useEffect(()=>{
@@ -17,32 +18,25 @@ const  FirebaseImg = forwardRef<HTMLImageElement, { width?: number | string, hei
     const loadImage = ()=>{
         setImageState("loading");
         const r = ref(getStorage(), props.url);
-        updateMetadata(r, {
-            cacheControl: 'public,max-age=4000',
-        }).then(x=>{
-            
-        })
+        updateMetadata(r, { cacheControl: 'public,max-age=4000' }).then(x=>{ });
 
         getDownloadURL(r).then(onLoadSuccess, onLoadFail);
        
     }
 
     const onLoadSuccess = (url : string)=>{
-       
         setImgUrl(url);
         setImageState("loaded");
     }
 
     const onLoadFail = (e:any)=> {
-        console.log(e);
         setImageState("failed");
     }
 
     const render = ()=>{
         if(imageState == "loading")
             return <span>Cargando..</span>;
-        else if(imageState == "failed")
-        {
+        else if(imageState == "failed") {
             if(props.onFailed)
                 props.onFailed();
            
@@ -51,7 +45,7 @@ const  FirebaseImg = forwardRef<HTMLImageElement, { width?: number | string, hei
             </div>
         }
         else {
-            return <img src={imgUrl} ref={fref} width={props.width + "px"} height={props.height + "px"} />
+            return <Image src={imgUrl!} width={props.width} height={props.height} />
         }
     }
 

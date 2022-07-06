@@ -17,7 +17,7 @@ export default function Filter(props : FilterProps) {
     },[]);
 
     return <Flex padding={"5px 0px"} flexDir={"row"} gap="20px" alignItems={"center"}>
-        {props.items.map((x,index) => <FilterButton onClick={()=>{
+        {props.items.map((x,index) => <FilterButton key={index} onClick={()=>{
             props.onItemClick(x.filter);
             setActiveIndex(index);
         }}  selected={activeIndex == index} text={x.text} />)}

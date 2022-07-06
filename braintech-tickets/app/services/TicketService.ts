@@ -14,12 +14,10 @@ export async function createTicket(ticket : Ticket, files? : FileList | undefine
     if(files)
     {
         const base64Files = await convertFileListToBase64(files);
-
         for(var i = 0; i < base64Files.length; i++)
         {
             var imgRef = ref(getStorage(), `/tickets/${ticket.number}/${base64Files[i].name}`);
             const baseData = base64Files[i].content.split(',')[1];
-            debugger;
             const result = await uploadString(imgRef, baseData, "base64");
         }
     }
@@ -43,7 +41,7 @@ export type TicketFilter = TicketState | "TODOS_CLIENTE" | "TODOS_ADMIN" | "CREA
 export async function getTickets(user : User, state : TicketFilter = "TODOS_ADMIN" ) {
    
     const queries : QueryConstraint[] = [  ];
-
+    debugger;
     // si es un ciente, solo cargar los tickest de su compania
     if(user.level == "CLIENT") {
         queries.push(where("user.company.id", "==", user.company.id));
@@ -62,6 +60,7 @@ export async function getTickets(user : User, state : TicketFilter = "TODOS_ADMI
     else if(state != "TODOS_ADMIN" && state != "TODOS_CLIENTE") {
         queries.push(where("state", "==", state));
     }
+
 
     const r = await getDocs(query(collection(getFirestore(), "tickets"), ...queries ));
 
