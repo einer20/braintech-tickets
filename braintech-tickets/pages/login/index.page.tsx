@@ -19,7 +19,8 @@ export default function Login()
     const toast = useToast();
     const { user, setUser } = useUser();
     const formRef = useRef<HTMLFormElement>(null);
-    const [form, setForm] = useState<{username:string, password : string, isValid: boolean}>({ username: "", password: "", isValid: true });
+    const [form, setForm] = useState<{username:string, password : string, isValid: boolean, state : "DEFAULT" | "LOGIN_IN"}>({ username: "", password: "", isValid: true, state: "DEFAULT" });
+    
 
     useEffect(()=>{
         onAuthStateChanged(auth, x=>{
@@ -40,9 +41,13 @@ export default function Login()
     const logIn = async (e : any)=>{
         e.preventDefault();
 
+        form.state = "LOGIN_IN";
+        setForm({...form});
         try{
             const r = await signInWithEmailAndPassword(auth, form.username, form.password);
         }catch(e) {
+            form.state = "DEFAULT";
+            setForm({...form});
             toast({ title: "Usuario o contrasena invalido", duration: 2000, status: "error" });
         }
    }
@@ -105,8 +110,8 @@ export default function Login()
                 </Flex>
                 <Flex alignItems={"center"} justifyContent="center" gap={"10px"} flexDir={"column"}>
                     
-                    <Button colorScheme={"blue"} width="250px" type="submit">
-                        Entrar
+                    <Button colorScheme={"blue"} width="250px" type="submit" disabled={form.state == "LOGIN_IN"}>
+                        {form.state == "LOGIN_IN" ? "Entrando..." : "Entrar"}
                     </Button>
                 </Flex>
                 <Text align="center" color="blackAlpha.500" fontSize={"0.6em"} fontFamily={'Roboto'}>
