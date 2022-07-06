@@ -17,29 +17,31 @@ export default function NewTicket(props : Props) {
     const { user } = useUser();
     const toast = useToast();
     const [form, setForm] = useState<{about: string, details : string, area: string}>({about:"", area:"Emergencia", details: ""});
+    const [formState, setFormState] = useState<"DEFAULT" | "GUARDANDO">("DEFAULT");
     const inputFileRef = useRef<HTMLInputElement>(null);
     const [attachments, setAttachments] = useState<Array<{fileName: string}>>([]);
-
-    const generateId = (ticket : Ticket)=>{
-        return `${ticket.user.company.shortName}-${ticket.date.toDate().getDay()}`
-    }
 
     const create = async ()=>{
         if(form.about.trim().length == 0 || form.details.trim().length == 0)
         { 
 
         }
-        else if(confirm("Seguro que desea crear este ticket?")){
+        else if(confirm("Seguro que desea crear este ticket?")) {
+
+            setFormState("GUARDANDO");
             const ticket = await createTicket({
-                about: form.about,
+                about: form.about, 
                 details: form.details, 
-                state : "NOASIGNADO",
-                type: form.area,
-                user: user!,
-                number: 0,
-                date : Timestamp.now()
-            });
+                state : "NOASIGNADO", 
+                type: form.area, 
+                user: user!, 
+                number: 0, 
+                date : Timestamp.now(), 
+                attachments: attachments.map(x=>x.fileName)
+            }, inputFileRef.current?.files);
+
             toast({ title: "Ticket creado", description: "Ticket creado exitosamente", duration: 10000, status: "success" });
+            setFormState("DEFAULT");
             props.onCreate(ticket);
         }
     }
@@ -128,8 +130,8 @@ export default function NewTicket(props : Props) {
 
         </ModalBody>
         <ModalFooter>
-            <Button colorScheme='blue' mr={3} onClick={create}>
-                Crear ticket
+            <Button colorScheme='blue' mr={3} onClick={create} disabled={formState == "GUARDANDO"}>
+                {formState == "GUARDANDO" ? "Guardando..." : "Crear ticket"} 
             </Button>
             <Button variant='ghost' onClick={props.onCancel}>Cancelar</Button>
         </ModalFooter>

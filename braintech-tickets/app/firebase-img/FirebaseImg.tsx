@@ -4,7 +4,7 @@ import { firebaseConfig } from "../../firebaseConfig";
 import { getDownloadURL, getStorage, ref, updateMetadata } from "firebase/storage";
 import { Button } from "@chakra-ui/react";
 
-const  FirebaseImg = forwardRef<HTMLImageElement, { width?: number, height?: number, url : string, onFailed?: () => void }>(( props, fref) => 
+const  FirebaseImg = forwardRef<HTMLImageElement, { width?: number | string, height?: number | string, url : string, onFailed?: () => void }>(( props, fref) => 
 {
     const [ imageState, setImageState ] = useState<"loading"  | "loaded" | "failed">();
     const [ imgUrl, setImgUrl] = useState<string>();
@@ -45,8 +45,6 @@ const  FirebaseImg = forwardRef<HTMLImageElement, { width?: number, height?: num
         {
             if(props.onFailed)
                 props.onFailed();
-
-            console.log(props.url);
            
             return <div>
                 <span style={{color:'red'}}>Imagen no pude cargar</span>. <Button onClick={x=> loadImage()} role="link">Reintentar</Button>

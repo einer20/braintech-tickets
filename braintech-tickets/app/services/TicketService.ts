@@ -1,13 +1,29 @@
 import Ticket, { TicketState } from "../models/Ticket";
 import { getFirestore, increment, addDoc, getDoc,collection, setDoc, updateDoc, getDocs, where, doc, query, QueryConstraint} from '@firebase/firestore';
 import User from "../models/User";
+import convertFileListToBase64 from "../utils/convertToBase64";
+import { getStorage, ref, uploadString } from "firebase/storage";
 
-export async function createTicket(ticket : Ticket) {
+export async function createTicket(ticket : Ticket, files? : FileList | undefined | null) {
 
     ticket.number = await getNewTicketId();
     ticket.state = "NOASIGNADO";
     const r = await addDoc(collection(getFirestore(), "tickets"), ticket);
     ticket.id = r.id;
+
+    if(files)
+    {
+        const base64Files = await convertFileListToBase64(files);
+
+        for(var i = 0; i < base64Files.length; i++)
+        {
+            var imgRef = ref(getStorage(), `/tickets/${ticket.number}/${base64Files[i].name}`);
+            const baseData = base64Files[i].content.split(',')[1];
+            debugger;
+            const result = await uploadString(imgRef, baseData, "base64");
+        }
+    }
+
 
     return ticket;
 }

@@ -1,10 +1,11 @@
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from "@chakra-ui/modal";
-import { Button, Flex, Select, Text, Textarea, useToast } from "@chakra-ui/react";
+import { Box, Button, Flex, Select, Text, Textarea, useToast } from "@chakra-ui/react";
 import { Timestamp } from "firebase/firestore";
 import moment from "moment";
 import { useState } from "react";
 import LinkButton from "../../app/button/LinkButton";
+import FirebaseImg from "../../app/firebase-img/FirebaseImg";
 import Ticket from "../../app/models/Ticket";
 import User from "../../app/models/User";
 import { updateTicket } from "../../app/services/TicketService";
@@ -17,6 +18,7 @@ export default function TicketDetails(props : {ticket  : Ticket, onTicketUpdated
     const [ selectedUser, setSelectedUser] = useState<User>();
     const [closeReason, setCloseReason] = useState<string | undefined>(ticket.resolution);
     const toast = useToast();
+    const [viewAttachment, setViewAttachment] = useState<string>();
 
     const loadUsers = async ()=>{
         if(users.length == 0)
@@ -90,20 +92,20 @@ export default function TicketDetails(props : {ticket  : Ticket, onTicketUpdated
                         </Text>
                     </Flex>
 
-                    <Flex flexDir={"row"} gap="20px">
+                    <Flex flexDir={"row"} justifyContent={"space-between"}>
                         <Flex flexDir={"column"}>
-                        <Text fontWeight={'bold'} fontFamily={'Roboto'}>Asignado a:</Text>
-                        <LinkButton text={ticket.assignedTo?.user?.toUpperCase() || "No se ha asignado a nadie"} onClick={loadAssignnee}/>
-                        <Select display={users.length == 0 ? "none" : "block"} onChange={x=>{
-                                if(x.target.selectedIndex > 0) {
-                                    const user = users[x.target.selectedIndex-1];
-                                    updateAssignee( user );
-                                    
-                                } 
-                            }}>
-                                <option></option>
-                            {users.map((x,index)=> <option key={index} selected={ticket.assignedTo?.id == x.id} value={index}>{x.user.toUpperCase()}</option>)}
-                        </Select>
+                            <Text fontWeight={'bold'} fontFamily={'Roboto'}>Asignado a:</Text>
+                            <LinkButton text={ticket.assignedTo?.user?.toUpperCase() || "No se ha asignado a nadie"} onClick={loadAssignnee}/>
+                            <Select display={users.length == 0 ? "none" : "block"} onChange={x=>{
+                                    if(x.target.selectedIndex > 0) {
+                                        const user = users[x.target.selectedIndex-1];
+                                        updateAssignee( user );
+                                        
+                                    } 
+                                }}>
+                                    <option></option>
+                                {users.map((x,index)=> <option key={index} selected={ticket.assignedTo?.id == x.id} value={index}>{x.user.toUpperCase()}</option>)}
+                            </Select>
                         </Flex>
                         <Flex flexDir={"column"}>
                             <Text fontWeight={'bold'} fontFamily={'Roboto'}>Estado:</Text>
@@ -124,6 +126,11 @@ export default function TicketDetails(props : {ticket  : Ticket, onTicketUpdated
                     <Flex flexDir={"column"}>
                         <Text fontWeight={'bold'} fontFamily={'Roboto'}>Detalles:</Text>
                         <Text>{ticket.details}</Text>
+                    </Flex>
+                    <Flex flexDir={"column"}>
+                        <Text fontWeight={'bold'} fontFamily={'Roboto'}>Adjuntos:</Text>
+                        <Flex flexDir={"row"} gap={"10px"}>{ticket.attachments?.map((x,index)=> <LinkButton onClick={()=> setViewAttachment(x)} text={`Adjunto ${index+1}`} />)}</Flex>
+                        {viewAttachment ? <AttachmentsViewer onClose={()=> setViewAttachment(undefined)} attachment={viewAttachment} ticket={props.ticket} /> : null}
                     </Flex>
                 
                     <Flex flexDir={"column"}>
@@ -153,4 +160,20 @@ export default function TicketDetails(props : {ticket  : Ticket, onTicketUpdated
             </ModalFooter>
         </ModalContent>
     </Modal>
+}
+
+function AttachmentsViewer(props : { onClose : ()=> void, ticket : Ticket, attachment : string})
+{
+    return <>
+        <Modal size={"full"} isOpen={true} onClose={props.onClose}>
+            <ModalOverlay />
+            <ModalContent>
+                <ModalHeader>Previsualizacion</ModalHeader>
+                <ModalCloseButton onClick={props.onClose}/>
+                <ModalBody>
+                    <FirebaseImg width={"auto"} height={"auto"} url={`/tickets/${props.ticket.number}/${props.attachment}`} />
+                </ModalBody>
+        </ModalContent>
+    </Modal>
+    </>;
 }
