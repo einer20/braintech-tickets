@@ -129,7 +129,7 @@ export default function TicketDetails(props : {ticket  : Ticket, onTicketUpdated
                     </Flex>
                     <Flex flexDir={"column"}>
                         <Text fontWeight={'bold'} fontFamily={'Roboto'}>Adjuntos:</Text>
-                        <Flex flexDir={"row"} gap={"10px"}>{ticket.attachments?.map((x,index)=> <LinkButton onClick={()=> setViewAttachment(x)} text={`Adjunto ${index+1}`} />)}</Flex>
+                        <Flex flexDir={"row"} gap={"10px"}>{ticket.attachments?.map((x,index)=> <LinkButton key={index} onClick={()=> setViewAttachment(x)} text={`Adjunto ${index+1}`} />)}</Flex>
                         {viewAttachment ? <AttachmentsViewer onClose={()=> setViewAttachment(undefined)} attachment={viewAttachment} ticket={props.ticket} /> : null}
                     </Flex>
                 
