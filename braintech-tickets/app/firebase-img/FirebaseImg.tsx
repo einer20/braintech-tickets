@@ -1,55 +1,61 @@
 import { initializeApp } from "firebase/app";
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { firebaseConfig } from "../../firebaseConfig";
-import { getDownloadURL, getStorage, ref, updateMetadata } from "firebase/storage";
+import { getBlob, getDownloadURL, getStorage, ref, updateMetadata } from "firebase/storage";
 import { Button } from "@chakra-ui/react";
 import Image from "next/image";
 
-const  FirebaseImg = forwardRef<HTMLImageElement, { width?: number | string, height?: number | string, url : string, onFailed?: () => void }>(( props, fref) => 
+export type FirebaseImgProps = { width?: number | string, height?: number | string, disabledCache? : boolean, url : string, onFailed?: () => void };
+const FirebaseImg = forwardRef<HTMLImageElement, FirebaseImgProps>(( props, fref) => 
 {
     const [ imageState, setImageState ] = useState<"loading"  | "loaded" | "failed">("loading");
-    const [ imgUrl, setImgUrl] = useState<string>();
+    const imgRef =  useRef<HTMLImageElement>(null);
 
     useEffect(()=>{
         initializeApp(firebaseConfig);
         loadImage();
     },[]);
 
-    const loadImage = ()=>{
+    const loadImage = async ()=>{
         setImageState("loading");
-        const r = ref(getStorage(), props.url);
-        updateMetadata(r, { cacheControl: 'public,max-age=4000' }).then(x=>{ });
 
-        getDownloadURL(r).then(onLoadSuccess, onLoadFail);
-       
-    }
+        const storedImage = localStorage.getItem(`img-${props.url}`);
+        if( props.disabledCache || storedImage == null)
+        {
+           try {
 
-    const onLoadSuccess = (url : string)=>{
-        setImgUrl(url);
-        setImageState("loaded");
-    }
+                const r = ref(getStorage(), props.url);
+                var b = await getBlob(r);
+        
+                var reader = new FileReader();
+        
+                reader.onload = (r)=>{
+                    setImageState("loaded");
+                    imgRef.current!.src = r.target?.result as string;
+                    localStorage.setItem(`img-${props.url}`, r.target?.result as string);
+                }
+        
+                reader.readAsDataURL(b);
 
-    const onLoadFail = (e:any)=> {
-        setImageState("failed");
-    }
-
-    const render = ()=>{
-        if(imageState == "loading")
-            return <span>Cargando..</span>;
-        else if(imageState == "failed") {
-            if(props.onFailed)
-                props.onFailed();
-           
-            return <div>
-                <span style={{color:'red'}}>Imagen no pude cargar</span>. <Button onClick={x=> loadImage()} role="link">Reintentar</Button>
-            </div>
+           } catch(e) {
+                setImageState("failed");
+                if(props.onFailed)
+                    props.onFailed();
+           }
         }
         else {
-            return <Image src={imgUrl!} width={props.width} height={props.height} />
-        }
+            setImageState("loaded")
+            imgRef.current!.src = storedImage;
+        };
     }
 
-    return render();
+    const FailedErorr = ()=> <div> <span style={{color:'red'}}>Imagen no pude cargar</span>. <Button onClick={x=> loadImage()} role="link">Reintentar</Button></div>;
+
+    return <>
+        {imageState == "loading" ? <span>Cargando..</span> : null}
+        {imageState == "failed" ? <FailedErorr /> : null}
+        <img ref={imgRef} style={{display: imageState == "loaded" ? "block" : "none"}} width={props.width} height={props.height} />
+    </>
 });
 
 export default FirebaseImg;

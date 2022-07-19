@@ -171,7 +171,7 @@ function AttachmentsViewer(props : { onClose : ()=> void, ticket : Ticket, attac
                 <ModalHeader>Previsualizacion</ModalHeader>
                 <ModalCloseButton onClick={props.onClose}/>
                 <ModalBody>
-                    <FirebaseImg width={"auto"} height={"auto"} url={`/tickets/${props.ticket.number}/${props.attachment}`} />
+                    <FirebaseImg disabledCache={true} width={"auto"} height={"auto"} url={`/tickets/${props.ticket.number}/${props.attachment}`} />
                 </ModalBody>
         </ModalContent>
     </Modal>
