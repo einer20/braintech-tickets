@@ -3,6 +3,7 @@ import moment from "moment"
 import CompanyLogo from "../CompanyLogo"
 import Ticket from "../models/Ticket"
 import UserInitials from "../UserInitials"
+import UserProfilePic from "../UserProfilePic"
 
 
 export type UserTicketProps = {
@@ -73,7 +74,7 @@ export default function UserTicket(props : UserTicketProps) {
                 md: "flex",
                 lg: "flex"
            }}>
-            {ticket.assignedTo == null ? <Text>No asignado</Text> : <UserInitials size="sm" userFullName={ticket.assignedTo?.user} />}
+            {ticket.assignedTo == null ? <Text>No asignado</Text> : <UserProfilePic size="sm" user={ticket.assignedTo} />}
         </Flex>
         <Flex flexDir={"row"} alignItems={"center"} gap={"10px"} flex={1}  display={{
                 base: "none",

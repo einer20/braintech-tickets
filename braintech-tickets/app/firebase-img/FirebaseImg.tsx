@@ -1,11 +1,11 @@
 import { initializeApp } from "firebase/app";
-import { forwardRef, useEffect, useRef, useState } from "react";
+import { CSSProperties, forwardRef, useEffect, useRef, useState } from "react";
 import { firebaseConfig } from "../../firebaseConfig";
 import { getBlob, getDownloadURL, getStorage, ref, updateMetadata } from "firebase/storage";
 import { Button } from "@chakra-ui/react";
 import Image from "next/image";
 
-export type FirebaseImgProps = { width?: number | string, height?: number | string, disabledCache? : boolean, url : string, onFailed?: () => void };
+export type FirebaseImgProps = { title?: string, width?: number | string, height?: number | string, disabledCache? : boolean, url : string, onFailed?: () => void, style? : CSSProperties };
 const FirebaseImg = forwardRef<HTMLImageElement, FirebaseImgProps>(( props, fref) => 
 {
     const [ imageState, setImageState ] = useState<"loading"  | "loaded" | "failed">("loading");
@@ -51,10 +51,11 @@ const FirebaseImg = forwardRef<HTMLImageElement, FirebaseImgProps>(( props, fref
 
     const FailedErorr = ()=> <div> <span style={{color:'red'}}>Imagen no pude cargar</span>. <Button onClick={x=> loadImage()} role="link">Reintentar</Button></div>;
 
+    const _style = {...props.style, ...{display: imageState == "loaded" ? "block" : "none"}};
     return <>
         {imageState == "loading" ? <span>Cargando..</span> : null}
         {imageState == "failed" ? <FailedErorr /> : null}
-        <img ref={imgRef} style={{display: imageState == "loaded" ? "block" : "none"}} width={props.width} height={props.height} />
+        <img title={props.title} ref={imgRef} style={ _style } width={props.width} height={props.height} />
     </>
 });
 
