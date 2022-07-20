@@ -61,7 +61,7 @@ export default function Index()
             {text: "Cargar resueltos", filter: "RESUELTO"},
             {text: "Creados por mi", filter: "ASIGNADOS_A_MI"}
         ]} onItemClick={filter=> setFilter(filter) } />
-
+ <Leyenda />
         <Text fontFamily='Roboto' margin={0}>
             Mostrando los ultimos 30 tickets
         </Text>
@@ -71,6 +71,7 @@ export default function Index()
         </Text>
 
         {selectedTicket != null ?  <TicketDetails onClosed={()=> setSelectedTicket(undefined)} ticket={selectedTicket} /> : null}
+       
         {tickets.map(x=> <UserTicket key={x.id} ticket={x} onClick={x=> setSelectedTicket(x) }/>)}
         
         <Flex  flexDir={"row"} display={tickets.length == 0 ? "flex" : "none"} gap={"4px"}>
@@ -83,3 +84,13 @@ export default function Index()
         </Flex>
     </Layout>;
 }
+
+const Leyenda = ()=> <Flex flexDir={"row"} gap={"4px"}>
+    <LeyendaItem text={"No asigando"} color={"#8484841c"} />
+    <LeyendaItem text={"En progreso"} color={"#2196f396"} />
+    <LeyendaItem text={"Resuelto"} color={"#8bc34aa6"} />
+</Flex>;
+
+const LeyendaItem = (props : {text: string, color :string}) => <Flex flexDir={"row"} alignItems={"center"} gap={"2px"}>
+    <Box background={props.color} width="10px" height={"20px"}></Box> {props.text}
+</Flex>
