@@ -38,7 +38,7 @@ export default function UserTicket(props : UserTicketProps) {
             md: "4",
             lg:"3"
         }}>
-            <Flex width={"6px"} background={colors[props.ticket.state]} height={"100%"}>
+            <Flex width={"10px"} background={colors[props.ticket.state]} height={"100%"}>
             </Flex>
             <Text fontFamily='Roboto' fontWeight={'bold'}>
                 #{ticket.number}
