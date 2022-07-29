@@ -1,4 +1,4 @@
-import { CheckCircleIcon } from "@chakra-ui/icons";
+import { CheckCircleIcon, CopyIcon } from "@chakra-ui/icons";
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from "@chakra-ui/modal";
 import { Box, Button, Flex, Select, Text, Textarea, useToast } from "@chakra-ui/react";
 import { Timestamp } from "firebase/firestore";
@@ -19,6 +19,7 @@ export default function TicketDetails(props : {ticket  : Ticket, onTicketUpdated
     const [closeReason, setCloseReason] = useState<string | undefined>(ticket.resolution);
     const toast = useToast();
     const [viewAttachment, setViewAttachment] = useState<string>();
+    
 
     const loadUsers = async ()=>{
         if(users.length == 0)
@@ -81,13 +82,21 @@ export default function TicketDetails(props : {ticket  : Ticket, onTicketUpdated
     return <Modal size={"xl"} isOpen={true} onClose={()=>{}}>
         <ModalOverlay />
         <ModalContent>
-            <ModalHeader>#{ticket.number}</ModalHeader>
+            <ModalHeader>
+                #{ticket.number} 
+                &nbsp;&nbsp;
+                <CopyIcon fontSize={"0.8em"} cursor="pointer" onClick={x=>{
+                    navigator.clipboard.writeText("https://braintech-tickets.vercel.app/admin?ticket="+ticket.number);
+                    toast({status: "info", title:"Url ticket copiada", position:"top"});
+                }}/>
+            </ModalHeader>
             <ModalCloseButton onClick={props.onClosed}/>
             <ModalBody>
                 
                 <Flex gap={"10px"} flexDir={"column"}>
                     <Flex>
                         <Text>
+                       
                             {ticket.about.toUpperCase()} - {ticket.user.company.shortName}
                         </Text>
                     </Flex>

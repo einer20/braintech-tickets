@@ -40,8 +40,8 @@ export default function TicketDetails(props : {ticket  : Ticket, onClosed : ()=>
                         <Text>{ticket.details}</Text>
                     </Flex>
                     <Flex flexDir={"column"}>
-                        <Text fontWeight={'bold'} fontFamily={'Roboto'}>Resolucion:</Text>
-                        <Text color={ticket.resolution == null ? "blackAlpha.500" : "black"}>{ticket.resolution || "Ticket todavia no se ha resuelto"}</Text>
+                        <Text fontWeight={'bold'} fontFamily={'Roboto'} color={ticket.resolution ? "green" : "black"}>Resolucion:</Text>
+                        <Text color={ticket.resolution == null ? "blackAlpha.500" : "green"}>{ticket.resolution || "Ticket todavia no se ha resuelto"}</Text>
                     </Flex>
                   
                 </Flex>

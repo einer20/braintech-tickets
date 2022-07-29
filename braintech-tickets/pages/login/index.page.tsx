@@ -5,22 +5,30 @@ import LoginLayout from "./LoginLayout";
 import Image from "next/image";
 import LinkButton from "../../app/button/LinkButton";
 import useUser from "../../app/useUser";
-import { getAuth, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "../../firebaseConfig";
 import { getUserByAuthId, getUserByEmail } from "../../app/services/UserService";
+import { GetServerSideProps } from "next";
 
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-export default function Login()
+export const getServerSideProps : GetServerSideProps = async(context)=>{
+    return {
+        props: {
+            returnUrl: context?.query?.returnUrl
+        }
+    }
+}
+
+export default function Login(props : {returnUrl : string })
 {
     const toast = useToast();
     const { user, setUser } = useUser();
     const formRef = useRef<HTMLFormElement>(null);
     const [form, setForm] = useState<{username:string, password : string, isValid: boolean, state : "DEFAULT" | "LOGIN_IN"}>({ username: "", password: "", isValid: true, state: "DEFAULT" });
-    
 
     useEffect(()=>{
         onAuthStateChanged(auth, x=>{
@@ -33,10 +41,12 @@ export default function Login()
                         else
                             window.location.href = "/cliente";
                     },200);  
-                });
+                }).catch(x=>{
+                    signOut(auth);
+                })
             }
         })
-    },[])
+    },[]);
      
     const logIn = async (e : any)=>{
         e.preventDefault();

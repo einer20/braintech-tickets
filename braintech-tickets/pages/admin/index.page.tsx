@@ -8,14 +8,26 @@ import { useEffect, useState } from "react";
 import useTickets from "../../app/useTickets";
 import Ticket from "../../app/models/Ticket";
 import TicketDetails from "./ticket-details";
+import { GetServerSideProps } from "next";
 
-export default function Index()
+export const getServerSideProps : GetServerSideProps = async (context) =>
+{
+    return {
+        props: {
+            ticketId : context?.query?.ticket || 0
+        }
+    }
+}
+
+
+export default function Index(props : {ticketId? : number})
 {
 
     const {user} = useUser(); 
     const [showCreateNewTicket, setShowCreateNewTicket] = useState<boolean>(false);
     const { filter, setFilter, tickets, isLoading, reload } = useTickets();
     const [selectedTicket, setSelectedTicket] = useState<Ticket>();
+    const [initialTicketSearch, setInitialTicketSearch] = useState<number>(0);
 
     useEffect(()=>{
         if(user != null && user.level == "CLIENT") {
@@ -25,7 +37,21 @@ export default function Index()
         else{
             setFilter("TODOS_CLIENTE")
         }
+
+        if(props.ticketId) {
+            setInitialTicketSearch(props.ticketId);
+        }
     },[]);
+
+    useEffect(()=>{
+        if(initialTicketSearch >= 0 && isLoading == false)  {
+            var ticket = tickets.filter(x=>x.number == props.ticketId)[0];
+            setSelectedTicket(ticket);
+            setInitialTicketSearch(0);
+        }
+    },[initialTicketSearch, isLoading])
+
+    
 
     return <Layout>
         <Flex flexDir={"column"} gap="10px">
@@ -50,6 +76,8 @@ export default function Index()
                 reload();
                 setSelectedTicket(undefined);
             }} onClosed={()=> setSelectedTicket(undefined)} ticket={selectedTicket} /> : null}
+
+
             {tickets.map(x=> <UserTicket key={x.id}  ticket={x} onClick={x=> setSelectedTicket(x) }/>)}
 
             <Flex flexDir={"row"} display={tickets.length == 0 ? "flex" : "none"} gap={"4px"}>

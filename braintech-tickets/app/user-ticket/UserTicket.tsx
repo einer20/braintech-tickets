@@ -14,7 +14,7 @@ const colors  : any = {
     'NOASIGNADO' : '#8484841c',
     'ENPROGRESO' : '#2196f396',
     "REVOCADO" : "#f4433640",
-    "RESUELTO": "#8bc34aa6"
+    "RESUELTO": "green.400"
 };
 
 const types : any = {

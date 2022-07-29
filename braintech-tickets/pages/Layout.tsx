@@ -7,6 +7,7 @@ import UserInitials from "../app/UserInitials";
 import useUser from "../app/useUser";
 import { firebaseConfig } from "../firebaseConfig";
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import UserProfilePic from "../app/UserProfilePic";
 
 export default function Layout(props : { children : JSX.Element | JSX.Element[]})
 {
@@ -16,7 +17,7 @@ export default function Layout(props : { children : JSX.Element | JSX.Element[]}
     useEffect(()=>{
         onAuthStateChanged(auth,(x)=>{
             if(x == null) {
-                window.location.href = "/login"
+                window.location.href = "/login?returnUrl=" + location.href;
             }
         });
     },[]);
@@ -35,7 +36,11 @@ export default function Layout(props : { children : JSX.Element | JSX.Element[]}
             <title>BrainTech RD - Tickets</title>
         </Head>
 
-        {auth.currentUser == null ? <div>Verificando...</div> : <>
+        {auth.currentUser == null ? <div>Verificando...</div> :
+        
+        
+        
+        <>
         <Box css={{
             position:"fixed",
             top:"0px",
@@ -60,10 +65,10 @@ export default function Layout(props : { children : JSX.Element | JSX.Element[]}
             <Flex flexDir={"row"} gap="20px" alignItems={"center"}>
 
                 <Flex flexDir={"row"} gap="4px">
-                    <UserInitials  userFullName="MUSANTANA" />
+                    <UserProfilePic size="sm" user={user} />
                     <Flex flexDir={"column"} alignItems={"flex-start"} justifyContent="center">
-                        <Text margin={0} fontWeight={"bold"} fontFamily={'Roboto'}>{user?.user.toUpperCase()}</Text>
-                        <Text  margin={0} color="#333" fontFamily={'Roboto'}>{user?.company?.shortName.toUpperCase()}</Text>
+                        <Text lineHeight={1} margin={0} fontWeight={"bold"} fontFamily={'Roboto'}>{user?.user.toUpperCase()}</Text>
+                        <Text lineHeight={1} margin={0} color="#333" fontFamily={'Roboto'}>{user?.company?.shortName.toUpperCase()}</Text>
                     </Flex>
                 </Flex>
 
