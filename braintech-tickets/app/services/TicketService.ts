@@ -59,7 +59,7 @@ export async function getTickets(user : User, state : TicketFilter = "TODOS_ADMI
     else if(state == "NO_RESUELTOS") {
         queries.push(where("state", "!=" , "RESUELTO"));
     }
-    else if(state != "TODOS_ADMIN" && state != "TODOS_CLIENTE") {
+    else if(state != "TODOS_ADMIN" ) {
         queries.push(where("state", "==", state));
     }
 
