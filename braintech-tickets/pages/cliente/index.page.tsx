@@ -1,6 +1,6 @@
 import Layout from "../Layout";
 import UserTicket from '../../app/user-ticket/UserTicket';
-import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
+import { Box, Button, filter, Flex, Heading, Text } from "@chakra-ui/react";
 import Filter from "../../app/filter/Filter";
 import NewTicket from "./new-ticket";
 import { useEffect, useState } from "react";
@@ -59,6 +59,7 @@ export default function Index()
         <Filter items={[ {text: "Cargar todos", filter: "TODOS_CLIENTE"} , 
             {text: "Cargar no resueltos", filter: "NO_RESUELTOS"},
             {text: "Cargar resueltos", filter: "RESUELTO"},
+            {text: "Cargar revocados", filter: "REVOCADO"},
             {text: "Creados por mi", filter: "ASIGNADOS_A_MI"}
         ]} onItemClick={filter=> setFilter(filter) } />
  <Leyenda />
@@ -70,7 +71,10 @@ export default function Index()
             Cargando tickets...
         </Text>
 
-        {selectedTicket != null ?  <TicketDetails onClosed={()=> setSelectedTicket(undefined)} ticket={selectedTicket} /> : null}
+        {selectedTicket != null ?  <TicketDetails onClosed={()=> {
+            setSelectedTicket(undefined);
+            reload();
+        }} ticket={selectedTicket} /> : null}
        
         {tickets.map(x=> <UserTicket key={x.id} ticket={x} onClick={x=> setSelectedTicket(x) }/>)}
         

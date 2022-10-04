@@ -1,11 +1,22 @@
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from "@chakra-ui/modal";
-import { Button, Flex, Text } from "@chakra-ui/react";
+import { Button, Flex, Text, useToast } from "@chakra-ui/react";
 import moment from "moment";
 import Ticket from "../../app/models/Ticket";
+import { updateTicket } from "../../app/services/TicketService";
 
 export default function TicketDetails(props : {ticket  : Ticket, onClosed : ()=> void })
 { 
     const { ticket } = props;
+    const toast = useToast();
+
+    const revokar = async ()=>{
+        const t = {...props.ticket};
+        t.state = "REVOCADO";
+        const ticket = updateTicket(t);
+        
+        toast({ title: "Ticket revocado", duration: 1000, status: "success" });
+        props.onClosed();
+    }
 
     return <Modal size={"xl"} isOpen={true} onClose={()=>{}}>
         <ModalOverlay />
@@ -47,6 +58,9 @@ export default function TicketDetails(props : {ticket  : Ticket, onClosed : ()=>
                 </Flex>
             </ModalBody>
             <ModalFooter>
+                <Button colorScheme={"red"} mr={3} onClick={revokar}>
+                    Revocar ticket
+                </Button>
                 <Button variant={'ghost'} mr={3} onClick={props.onClosed}>
                     Cerrar
                 </Button>

@@ -41,7 +41,7 @@ export type TicketFilter = TicketState | "TODOS_CLIENTE" | "TODOS_ADMIN" | "CREA
 export async function getTickets(user : User, state : TicketFilter = "TODOS_ADMIN" ) {
    
     const queries : QueryConstraint[] = [  ];
-    
+    debugger;
     // si es un ciente, solo cargar los tickest de su compania
     if(user.level == "CLIENT") {
         queries.push(where("user.company.id", "==", user.company.id));
@@ -53,8 +53,10 @@ export async function getTickets(user : User, state : TicketFilter = "TODOS_ADMI
     else if(state == "CREADOS_POR_MI") {
         queries.push(where("user.id", "==", user.id!))
     }
+    else if(state == "TODOS_CLIENTE") {
+        queries.push(where("state", "!=", "REVOCADO"))
+    }
     else if(state == "NO_RESUELTOS") {
-        debugger;
         queries.push(where("state", "!=" , "RESUELTO"));
     }
     else if(state != "TODOS_ADMIN" && state != "TODOS_CLIENTE") {
