@@ -59,6 +59,23 @@ export default function TicketDetails(props : {ticket  : Ticket, onTicketUpdated
         }
     }
 
+    const revokeTicket = async ()=>{
+        if(closeReason == undefined || closeReason?.length == 0)
+        {
+            toast({ title: "Resolucion es requerida", duration: 1000, status: "error" });
+        }
+        else if(window.confirm("Ticket sera revocado. Seguro que desea continuar?")) {
+            const t = {...ticket};
+            t.state = "REVOCADO";
+            t.updateDate = Timestamp.now();
+            t.resolution = closeReason || "";
+            
+            const r = await updateTicket(t);
+            toast({ title: "Ticket revocado exitosamente", duration: 1000, status: "success" });
+            props.onTicketUpdated(t);
+        }
+    }
+
     const updateAssignee = async (user : User)=>{
         setSelectedUser(user);
         const t = {...ticket};
@@ -157,6 +174,10 @@ export default function TicketDetails(props : {ticket  : Ticket, onTicketUpdated
                  
                 <Button colorScheme={"pink"} mr={3} display={ticket.state == "RESUELTO" ? "inline-block" : "none"} onClick={devolver}>
                     Reabrir
+                </Button>
+
+                <Button colorScheme={"red"} display={(ticket.state == "ENPROGRESO" || ticket.state == "NOASIGNADO") ? "inline-block" : "none"} mr={3} onClick={x=> revokeTicket()}>
+                    Revocar ticket
                 </Button>
 
                 <Button colorScheme={"gray"} mr={3} onClick={x=> closeTicket()}>

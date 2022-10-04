@@ -18,7 +18,7 @@ const auth = getAuth(app);
 export const getServerSideProps : GetServerSideProps = async(context)=>{
     return {
         props: {
-            returnUrl: context?.query?.returnUrl
+            returnUrl: context?.query?.returnUrl || ""
         }
     }
 }
@@ -119,7 +119,6 @@ export default function Login(props : {returnUrl : string })
                     </Flex>
                 </Flex>
                 <Flex alignItems={"center"} justifyContent="center" gap={"10px"} flexDir={"column"}>
-                    
                     <Button colorScheme={"blue"} width="250px" type="submit" disabled={form.state == "LOGIN_IN"}>
                         {form.state == "LOGIN_IN" ? "Entrando..." : "Entrar"}
                     </Button>
