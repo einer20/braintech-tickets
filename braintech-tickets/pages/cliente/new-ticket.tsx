@@ -81,10 +81,17 @@ export default function NewTicket(props : Props) {
                 }}>
                     <option value="Emergencia">Emergencia</option>
                     <option value="Hospitalizacion">Hospitalizacion</option>
+                    <option value="Hospitalizacion">Enfermeria</option>
                     <option value="Hospitalizacion">Consulta Externa</option>
-                    <option value="Facturacion">Facturacion</option>
                     <option value="Cirugia">Cirugia</option>
+
+                    <option value="Facturacion">Facturacion</option>
                     <option value="Contabilidad">Contabilidad</option>
+                    <option value="Inventario">Inventario</option>
+                    <option value="Orden de compra y Entrada">Orden de compra y Entrada</option>
+                    <option value="Nomina">Nomina</option>
+                    <option value="Cliente">Cliente</option>
+
                 </Select>
             </Flex>        
         
