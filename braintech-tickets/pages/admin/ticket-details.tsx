@@ -2,8 +2,9 @@ import { CheckCircleIcon, CopyIcon } from "@chakra-ui/icons";
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from "@chakra-ui/modal";
 import { Box, Button, Flex, Select, Text, Textarea, useToast } from "@chakra-ui/react";
 import { Timestamp } from "firebase/firestore";
+import { getDownloadURL, getStorage, ref } from "firebase/storage";
 import moment from "moment";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LinkButton from "../../app/button/LinkButton";
 import FirebaseImg from "../../app/firebase-img/FirebaseImg";
 import Ticket from "../../app/models/Ticket";
@@ -155,7 +156,7 @@ export default function TicketDetails(props : {ticket  : Ticket, onTicketUpdated
                     </Flex>
                     <Flex flexDir={"column"}>
                         <Text fontWeight={'bold'} fontFamily={'Roboto'}>Adjuntos:</Text>
-                        <Flex flexDir={"row"} gap={"10px"}>{ticket.attachments?.map((x,index)=> <LinkButton key={index} onClick={()=> setViewAttachment(x)} text={`Adjunto ${index+1}`} />)}</Flex>
+                        <Flex flexDir={"row"} gap={"10px"}>{ticket.attachments?.map((x,index)=> <LinkButton key={index} onClick={()=> setViewAttachment(x)} text={`Adjunto '${x}'`} />)}</Flex>
                         {viewAttachment ? <AttachmentsViewer onClose={()=> setViewAttachment(undefined)} attachment={viewAttachment} ticket={props.ticket} /> : null}
                     </Flex>
                 
@@ -194,16 +195,55 @@ export default function TicketDetails(props : {ticket  : Ticket, onTicketUpdated
 
 function AttachmentsViewer(props : { onClose : ()=> void, ticket : Ticket, attachment : string})
 {
+
+    const invalidExtension = ["docx", "doc", "pptx", "ppt", "txt"];
+    const extension = props.attachment.split('.')[1];
+    const isInvalidAttamentment = invalidExtension.indexOf(extension.toLowerCase()) > -1;
+    
     return <>
-        <Modal size={"full"} isOpen={true} onClose={props.onClose}>
+        <Modal size={ isInvalidAttamentment ? "md": "full"} isOpen={true} onClose={props.onClose}>
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader>Previsualizacion</ModalHeader>
                 <ModalCloseButton onClick={props.onClose}/>
                 <ModalBody>
-                    <FirebaseImg disabledCache={true} width={"auto"} height={"auto"} url={`/tickets/${props.ticket.number}/${props.attachment}`} />
+                    {invalidExtension.indexOf(extension.toLowerCase()) == -1 
+                     ? <FirebaseImg disabledCache={true} width={"auto"} height={"auto"} url={`/tickets/${props.ticket.number}/${props.attachment}`} /> :
+                     <CantPreviewFile ticketNumber={props.ticket.number} filename={props.attachment} />
+                    }
                 </ModalBody>
         </ModalContent>
     </Modal>
     </>;
+}
+
+const CantPreviewFile = (props : { ticketNumber: number, filename : string }) =>{
+    const part = props.filename.split('.');
+
+    const [url, setUrl] = useState<string>();
+
+    useEffect(()=>{
+        getDownloadURL(ref(getStorage(), `/tickets/${props.ticketNumber}/${props.filename}`)).then(x=>{
+            setUrl(x);
+        })
+    })
+
+
+    if(part.length == 2)
+        return <div>
+            <Text>Los archivos con extension <strong>{part[1]}</strong> no pueden ser previsualizados</Text>
+
+            <div>
+                <br />
+                <Button colorScheme="blue"
+                    disabled={url == null}
+                    onClick={x=>{
+                        window.open(url)
+                    }}
+                >Descargar</Button>
+            </div>
+        </div>
+    else {
+        return <Text>El archiv <strong>{props.filename} no tiene extension para ser previsualizado</strong></Text>;
+    }
 }

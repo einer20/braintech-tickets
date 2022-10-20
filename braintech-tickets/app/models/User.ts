@@ -7,7 +7,7 @@ type User = {
     level: "ADMIN" | "CLIENT",
     email: string,
     company : Company,
-    profilePhoto?: string
+    profilePhoto?: string,    
 };
 
 export default User;
