@@ -152,7 +152,8 @@ export default function TicketDetails(props : {ticket  : Ticket, onTicketUpdated
                     </Flex>
                     <Flex flexDir={"column"}>
                         <Text fontWeight={'bold'} fontFamily={'Roboto'}>Detalles:</Text>
-                        <Text>{ticket.details}</Text>
+                        <DisplayLargeText text={props.ticket.details} textLimit={100} />
+                        
                     </Flex>
                     <Flex flexDir={"column"}>
                         <Text fontWeight={'bold'} fontFamily={'Roboto'}>Adjuntos:</Text>
@@ -246,4 +247,18 @@ const CantPreviewFile = (props : { ticketNumber: number, filename : string }) =>
     else {
         return <Text>El archiv <strong>{props.filename} no tiene extension para ser previsualizado</strong></Text>;
     }
+}
+
+const DisplayLargeText = (props : { text : string , textLimit : number})=>{
+    const [showMore, setShowMore] = useState<boolean>(false);
+
+    return <div>
+        <Box cursor={"pointer"} onClick={x=> setShowMore(true)}  display={showMore ? "none" :"block"}>
+            <Text>{props.text.slice(0, props.textLimit)}...</Text>
+            <Text color="blue">Ver mas</Text>
+        </Box>
+        <div style={{display: showMore ? "block" : "none"}}>
+            <Text>{props.text}</Text>
+        </div>
+    </div>
 }
